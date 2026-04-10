@@ -16,12 +16,23 @@ struct WhimsicalWalksApp: App {
     private static func configureRevenueCat() {
         #if DEBUG
         Purchases.logLevel = .debug
-        let apiKey = Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY
         #else
-        Purchases.logLevel = .warn
-        let apiKey = Config.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY
+        Purchases.logLevel = .info
         #endif
-        guard !apiKey.isEmpty else { return }
+
+        let prodKey = Config.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY
+        let testKey = Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY
+        let apiKey = !prodKey.isEmpty ? prodKey : testKey
+
+        guard !apiKey.isEmpty else {
+            NSLog("[RevenueCat] No API key found in Config. Paywall will not load.")
+            return
+        }
+
+        if prodKey.isEmpty {
+            NSLog("[RevenueCat] IOS key empty — using TEST key fallback.")
+        }
+
         Purchases.configure(withAPIKey: apiKey)
     }
 
