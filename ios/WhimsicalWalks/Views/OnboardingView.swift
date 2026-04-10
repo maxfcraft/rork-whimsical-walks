@@ -5,43 +5,27 @@ struct OnboardingView: View {
     let store: StoreViewModel
     let onComplete: () -> Void
     @State private var currentPage: Int = 0
-    @State private var userName: String = ""
-    @State private var selectedGoal: Int = 10000
-    @State private var customGoalText: String = ""
-    @State private var showCustomGoal: Bool = false
-    @State private var reviewRequested: Bool = false
-    @State private var autoAdvanceTask: Task<Void, Never>?
 
-    private let totalPages: Int = 6
+    private let totalPages: Int = 4
 
     var body: some View {
         ZStack {
             OnboardingBackground(page: currentPage)
 
             TabView(selection: $currentPage) {
-                RememberScreen()
+                AdventureIntroScreen()
                     .tag(0)
-                WalkingMedicineScreen()
+                QuestDemoScreen()
                     .tag(1)
-                FeaturesScreen()
+                WalkingStatsScreen()
                     .tag(2)
-                PersonalizeScreen(
-                    userName: $userName,
-                    selectedGoal: $selectedGoal,
-                    customGoalText: $customGoalText,
-                    showCustomGoal: $showCustomGoal,
-                    onNext: { advanceTo(4) }
-                )
-                    .tag(3)
-                ReviewScreen(reviewRequested: $reviewRequested)
-                    .tag(4)
                 OnboardingPaywallScreen(store: store, onComplete: onComplete)
-                    .tag(5)
+                    .tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.spring(response: 0.5, dampingFraction: 0.85), value: currentPage)
 
-            if currentPage < 5 {
+            if currentPage < 3 {
                 VStack {
                     Spacer()
                     pageControls
@@ -51,19 +35,11 @@ struct OnboardingView: View {
         }
         .ignoresSafeArea()
         .sensoryFeedback(.selection, trigger: currentPage)
-        .onChange(of: currentPage) { oldValue, newValue in
-            if newValue == 4 && !reviewRequested {
-                requestReviewAndAdvance()
-            }
-            if newValue == 3 {
-                savePersonalization()
-            }
-        }
     }
 
     private var pageControls: some View {
         HStack(spacing: 0) {
-            if currentPage > 0 && currentPage < 5 {
+            if currentPage > 0 {
                 Button {
                     withAnimation { currentPage -= 1 }
                 } label: {
@@ -89,9 +65,18 @@ struct OnboardingView: View {
 
             Spacer()
 
-            if currentPage < 3 {
+            if currentPage < 2 {
                 Button {
                     withAnimation { currentPage += 1 }
+                } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.8))
+                        .frame(width: 44, height: 44)
+                }
+            } else if currentPage == 2 {
+                Button {
+                    withAnimation { currentPage = 3 }
                 } label: {
                     Image(systemName: "chevron.right")
                         .font(.body.weight(.semibold))
@@ -103,33 +88,6 @@ struct OnboardingView: View {
             }
         }
         .padding(.horizontal, 24)
-    }
-
-    private func advanceTo(_ page: Int) {
-        savePersonalization()
-        withAnimation { currentPage = page }
-    }
-
-    private func savePersonalization() {
-        if !userName.trimmingCharacters(in: .whitespaces).isEmpty {
-            UserDefaults.standard.set(userName.trimmingCharacters(in: .whitespaces), forKey: "whimsical_user_name")
-        }
-        let goal = showCustomGoal ? (Int(customGoalText) ?? 10000) : selectedGoal
-        UserDefaults.standard.set(goal, forKey: "whimsical_step_goal")
-    }
-
-    private func requestReviewAndAdvance() {
-        reviewRequested = true
-        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            AppStore.requestReview(in: scene)
-        }
-        autoAdvanceTask?.cancel()
-        autoAdvanceTask = Task {
-            try? await Task.sleep(for: .seconds(2.5))
-            if !Task.isCancelled {
-                withAnimation { currentPage = 5 }
-            }
-        }
     }
 }
 
@@ -169,18 +127,6 @@ struct OnboardingBackground: View {
             ]
         case 1:
             return [
-                WhimsicalTheme.deepSage.opacity(0.9),
-                WhimsicalTheme.deepRose.opacity(0.7),
-                WhimsicalTheme.deepLavender.opacity(0.8),
-                WhimsicalTheme.lavender.opacity(0.6),
-                WhimsicalTheme.deepSage,
-                WhimsicalTheme.deepRose.opacity(0.8),
-                WhimsicalTheme.blushPink.opacity(0.6),
-                WhimsicalTheme.deepSage.opacity(0.8),
-                WhimsicalTheme.deepRose.opacity(0.9)
-            ]
-        case 2:
-            return [
                 WhimsicalTheme.deepLavender.opacity(0.9),
                 WhimsicalTheme.deepRose.opacity(0.8),
                 WhimsicalTheme.lavender.opacity(0.7),
@@ -191,17 +137,17 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.deepLavender.opacity(0.8),
                 WhimsicalTheme.blushPink.opacity(0.6)
             ]
-        case 3:
+        case 2:
             return [
-                WhimsicalTheme.deepRose.opacity(0.8),
-                WhimsicalTheme.deepLavender.opacity(0.7),
-                WhimsicalTheme.lavender.opacity(0.6),
+                WhimsicalTheme.deepSage.opacity(0.9),
                 WhimsicalTheme.deepRose.opacity(0.7),
-                WhimsicalTheme.blushPink.opacity(0.7),
                 WhimsicalTheme.deepLavender.opacity(0.8),
-                WhimsicalTheme.deepRose.opacity(0.9),
                 WhimsicalTheme.lavender.opacity(0.6),
-                WhimsicalTheme.deepLavender.opacity(0.7)
+                WhimsicalTheme.deepSage,
+                WhimsicalTheme.deepRose.opacity(0.8),
+                WhimsicalTheme.blushPink.opacity(0.6),
+                WhimsicalTheme.deepSage.opacity(0.8),
+                WhimsicalTheme.deepRose.opacity(0.9)
             ]
         default:
             return [
