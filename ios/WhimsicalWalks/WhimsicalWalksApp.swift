@@ -16,12 +16,31 @@ struct WhimsicalWalksApp: App {
     private static func configureRevenueCat() {
         #if DEBUG
         Purchases.logLevel = .debug
-        let apiKey = Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY
         #else
-        Purchases.logLevel = .warn
-        let apiKey = Config.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY
+        Purchases.logLevel = .info
         #endif
-        guard !apiKey.isEmpty else { return }
+
+        // RevenueCat uses the SAME public SDK key for sandbox (simulator +
+        // TestFlight) and production — there is no separate "test" key. The
+        // previous code branched on #if DEBUG and picked a different key in
+        // Release, which meant TestFlight builds loaded an empty/unset key
+        // and silently bailed out of configure(), leaving Purchases never
+        // initialized and the paywall stuck on "Subscription service not
+        // available." Prefer the iOS key; fall back to the test slot if the
+        // iOS slot happens to be blank so either is accepted.
+        let prodKey = Config.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY
+        let testKey = Config.EXPO_PUBLIC_REVENUECAT_TEST_API_KEY
+        let apiKey = !prodKey.isEmpty ? prodKey : testKey
+
+        guard !apiKey.isEmpty else {
+            NSLog("[RevenueCat] No API key found in Config. Paywall will not load. Populate EXPO_PUBLIC_REVENUECAT_IOS_API_KEY with your appl_… key.")
+            return
+        }
+
+        if prodKey.isEmpty {
+            NSLog("[RevenueCat] EXPO_PUBLIC_REVENUECAT_IOS_API_KEY was empty — using EXPO_PUBLIC_REVENUECAT_TEST_API_KEY as fallback.")
+        }
+
         Purchases.configure(withAPIKey: apiKey)
     }
 
