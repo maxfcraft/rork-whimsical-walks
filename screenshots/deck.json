@@ -1,0 +1,52 @@
+{
+  "theme": {
+    "style": "Soft dreamy worlds built from blush rose, warm lavender, and gilded peach light, evoking the feeling of stepping into an enchanted storybook. Backgrounds shift from warm rose-gold to cool lavender mist to deep twilight purple, unified by iridescent shimmer, floating light particles, and silky gradient depth. The mood is warm, playful, and magical—never harsh or clinical—with luminous bokeh energy that feels alive and inviting across every frame.",
+    "headlineFont": "font-family: 'Plus Jakarta Sans', sans-serif; import: @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap');",
+    "headlineFontSize": 120,
+    "mockupIds": {
+      "iphone": "cosmic-orange",
+      "ipad": "silver"
+    },
+    "palette": {
+      "primary": "#F4B8CC",
+      "secondary": "#C2A8E0",
+      "accent": "#FFCF77"
+    }
+  },
+  "slides": [
+    {
+      "label": "Home Screen",
+      "backgroundPrompt": "Abstract digital art with sweeping flowing silk ribbons in soft blush rose, warm rose gold, and pearl white cascading from upper right toward center left with graceful organic curves, suffused in warm diffused backlight creating a dreamy halo bloom, soft bokeh sparkle particles scattered throughout the mid and lower frame, the upper third calm and open fading into a pale blush-to-white gradient, depth-of-field blur softening the ribbon edges with subtle iridescent sheen. 8K quality, ultra smooth gradients, premium feel, no text, no letters, no UI elements, no device mockups.",
+      "backgroundUrl": "https://r2-pub.rork.com/app-store-screenshots/da003eed-3866-4f60-828b-fe024beadd61.png"
+    },
+    {
+      "label": "Quests",
+      "backgroundPrompt": "Abstract 3D rendered scene of translucent floating orbs and soft volumetric spheres in soft lavender, pale sage green, and pearl white hovering in a luminous misty atmosphere, gentle volumetric light rays filtering from the upper left casting long soft shadows, each sphere emitting a faint iridescent pastel halo, the upper third of the frame open and serene with a gentle lavender-to-pale-white gradient, fine atmospheric haze layering depth between the orbs. 8K quality, ultra smooth gradients, premium feel, no text, no letters, no UI elements, no device mockups.",
+      "backgroundUrl": "https://r2-pub.rork.com/app-store-screenshots/7c873443-9eb8-4b56-ac51-d2b1b2ef0bb5.png"
+    },
+    {
+      "label": "Polaroids",
+      "backgroundPrompt": "Abstract digital art featuring cascading molten warm peach and rose gold liquid flows with swirling gilded ribbons, bathed in warm directional light blooming from upper center creating a radiant golden corona, scattered tiny prismatic light flecks drifting like luminous pollen particles across the mid frame, the upper region softly fading into a calm warm peach-to-cream gradient, subtle fine grain texture adding tactile warmth and depth throughout the composition. 8K quality, ultra smooth gradients, premium feel, no text, no letters, no UI elements, no device mockups.",
+      "backgroundUrl": "https://r2-pub.rork.com/app-store-screenshots/f057a44d-d136-40c8-91df-b67549dd240e.png"
+    },
+    {
+      "label": "Pets",
+      "backgroundPrompt": "Abstract 3D rendered iridescent bubbles and translucent spheres in soft mint green, cotton candy pink, and mother-of-pearl white floating in a sun-drenched luminous space, warm light streaming from the right edge creating prismatic rainbow caustic reflections across each bubble surface, the upper portion open and serene dissolving into a gentle mint-to-white gradient, depth-of-field blur softening background layers into a dreamy bokeh wash of pastel color. 8K quality, ultra smooth gradients, premium feel, no text, no letters, no UI elements, no device mockups.",
+      "backgroundUrl": "https://r2-pub.rork.com/app-store-screenshots/a7829081-ad2a-49b2-a25d-a0bb212736ec.png"
+    },
+    {
+      "label": "Profile",
+      "backgroundPrompt": "Abstract digital art with a deep rose and soft violet twilight atmosphere, a rich gradient sweeping from deep magenta rose at the lower half up to dusky lavender purple at the upper third, dense with fine scattered star-like pinpricks of bright warm gold and cool white light distributed across the mid and lower frame, translucent aurora bands in blush rose and soft violet sweeping horizontally across the center, the upper region darker and calmer with a deep muted purple vignette framing the composition with mystical depth. 8K quality, ultra smooth gradients, premium feel, no text, no letters, no UI elements, no device mockups.",
+      "backgroundUrl": "https://r2-pub.rork.com/app-store-screenshots/92d1e179-d0f9-4f89-961f-ebfa5ba9919a.png"
+    }
+  ],
+  "headlines": {
+    "en": {
+      "Home Screen": "Walk Into<br>Magic",
+      "Quests": "Daily Quests",
+      "Polaroids": "Walk Memories",
+      "Pets": "Collect Pals",
+      "Profile": "Your Journey"
+    }
+  }
+}

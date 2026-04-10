@@ -1,0 +1,10 @@
+{
+  "$schema": "https://rork.com/schema/rork.json",
+  "apps": [
+    {
+      "name": "Whimsical Walks",
+      "path": "ios",
+      "framework": "swift"
+    }
+  ]
+}
