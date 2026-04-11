@@ -5,37 +5,56 @@ struct OnboardingView: View {
     let store: StoreViewModel
     let onComplete: () -> Void
     @State private var currentPage: Int = 0
+    @State private var onboardingPhoto: UIImage?
+    @State private var onboardingPhotoPath: String?
 
-    private let totalPages: Int = 7
+    private let totalPages: Int = 8
 
     var body: some View {
         ZStack {
             OnboardingBackground(page: currentPage)
 
-            TabView(selection: $currentPage) {
-                AdventureIntroScreen()
-                    .tag(0)
-                QuestDemoScreen()
-                    .tag(1)
-                FeatureShowcaseScreen()
-                    .tag(2)
-                WalkingStatsScreen()
-                    .tag(3)
-                PersonalizationScreen()
-                    .tag(4)
-                ReviewScreen(onContinue: { withAnimation { currentPage = 6 } })
-                    .tag(5)
-                OnboardingPaywallScreen(store: store, onComplete: onComplete)
-                    .tag(6)
+            Group {
+                switch currentPage {
+                case 0:
+                    HookScreen(onContinue: { advance() })
+                case 1:
+                    IdentityShiftScreen(onContinue: { advance() })
+                case 2:
+                    FeaturePreviewScreen(onContinue: { advance() })
+                case 3:
+                    OnboardingPersonalizationScreen(onContinue: { advance() })
+                case 4:
+                    LiveQuestScreen(onPhotoTaken: { image in
+                        onboardingPhoto = image
+                        if let path = PhotoManager.savePhoto(image) {
+                            onboardingPhotoPath = path
+                        }
+                        advance()
+                    })
+                case 5:
+                    ReinforcementScreen(
+                        capturedImage: onboardingPhoto,
+                        onContinue: { advance() }
+                    )
+                case 6:
+                    OnboardingReviewScreen(onContinue: { advance() })
+                case 7:
+                    OnboardingPaywallScreen(store: store, onComplete: onComplete)
+                default:
+                    EmptyView()
+                }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.spring(response: 0.5, dampingFraction: 0.85), value: currentPage)
+            .transition(.asymmetric(
+                insertion: .move(edge: .trailing).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
+            ))
 
-            if currentPage < 6 {
+            if currentPage < 7 && currentPage != 4 {
                 VStack {
                     Spacer()
-                    pageControls
-                        .padding(.bottom, 40)
+                    pageIndicator
+                        .padding(.bottom, 24)
                 }
             }
         }
@@ -43,50 +62,21 @@ struct OnboardingView: View {
         .sensoryFeedback(.selection, trigger: currentPage)
     }
 
-    private var pageControls: some View {
-        HStack(spacing: 0) {
-            if currentPage > 0 {
-                Button {
-                    withAnimation { currentPage -= 1 }
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
-                        .frame(width: 44, height: 44)
-                }
-            } else {
-                Spacer().frame(width: 44)
-            }
+    private func advance() {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) {
+            currentPage += 1
+        }
+    }
 
-            Spacer()
-
-            HStack(spacing: 8) {
-                ForEach(0..<totalPages, id: \.self) { i in
-                    Capsule()
-                        .fill(i == currentPage ? Color.white : Color.white.opacity(0.35))
-                        .frame(width: i == currentPage ? 24 : 8, height: 8)
-                        .animation(.spring(response: 0.35), value: currentPage)
-                }
-            }
-
-            Spacer()
-
-            if currentPage < 5 {
-                Button {
-                    withAnimation { currentPage += 1 }
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
-                        .frame(width: 44, height: 44)
-                }
-            } else if currentPage == 5 {
-                Spacer().frame(width: 44)
-            } else {
-                Spacer().frame(width: 44)
+    private var pageIndicator: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<totalPages, id: \.self) { i in
+                Capsule()
+                    .fill(i == currentPage ? Color.white : Color.white.opacity(0.3))
+                    .frame(width: i == currentPage ? 20 : 6, height: 6)
+                    .animation(.spring(response: 0.35), value: currentPage)
             }
         }
-        .padding(.horizontal, 24)
     }
 }
 
@@ -114,27 +104,27 @@ struct OnboardingBackground: View {
         switch page {
         case 0:
             return [
-                WhimsicalTheme.deepRose,
-                WhimsicalTheme.deepLavender.opacity(0.9),
-                WhimsicalTheme.deepRose.opacity(0.8),
-                WhimsicalTheme.lavender.opacity(0.7),
-                WhimsicalTheme.deepLavender,
-                WhimsicalTheme.blushPink.opacity(0.6),
-                WhimsicalTheme.deepRose.opacity(0.9),
-                WhimsicalTheme.deepLavender.opacity(0.8),
-                WhimsicalTheme.lavender.opacity(0.7)
+                Color(red: 0.15, green: 0.10, blue: 0.22),
+                Color(red: 0.22, green: 0.12, blue: 0.28),
+                Color(red: 0.18, green: 0.10, blue: 0.25),
+                Color(red: 0.25, green: 0.14, blue: 0.30),
+                Color(red: 0.20, green: 0.12, blue: 0.26),
+                Color(red: 0.22, green: 0.10, blue: 0.28),
+                Color(red: 0.18, green: 0.08, blue: 0.24),
+                Color(red: 0.24, green: 0.12, blue: 0.30),
+                Color(red: 0.16, green: 0.10, blue: 0.22)
             ]
         case 1:
             return [
-                WhimsicalTheme.deepLavender.opacity(0.9),
-                WhimsicalTheme.deepRose.opacity(0.8),
-                WhimsicalTheme.lavender.opacity(0.7),
-                WhimsicalTheme.deepRose.opacity(0.7),
-                WhimsicalTheme.deepLavender,
-                WhimsicalTheme.deepSage.opacity(0.7),
-                WhimsicalTheme.deepRose.opacity(0.9),
-                WhimsicalTheme.deepLavender.opacity(0.8),
-                WhimsicalTheme.blushPink.opacity(0.6)
+                Color(red: 0.20, green: 0.12, blue: 0.28),
+                WhimsicalTheme.deepLavender.opacity(0.6),
+                Color(red: 0.25, green: 0.15, blue: 0.32),
+                WhimsicalTheme.deepRose.opacity(0.4),
+                Color(red: 0.22, green: 0.14, blue: 0.30),
+                WhimsicalTheme.deepLavender.opacity(0.5),
+                Color(red: 0.18, green: 0.10, blue: 0.26),
+                WhimsicalTheme.deepRose.opacity(0.35),
+                Color(red: 0.24, green: 0.14, blue: 0.32)
             ]
         case 2:
             return [
@@ -150,18 +140,6 @@ struct OnboardingBackground: View {
             ]
         case 3:
             return [
-                WhimsicalTheme.deepSage.opacity(0.9),
-                WhimsicalTheme.deepRose.opacity(0.7),
-                WhimsicalTheme.deepLavender.opacity(0.8),
-                WhimsicalTheme.lavender.opacity(0.6),
-                WhimsicalTheme.deepSage,
-                WhimsicalTheme.deepRose.opacity(0.8),
-                WhimsicalTheme.blushPink.opacity(0.6),
-                WhimsicalTheme.deepSage.opacity(0.8),
-                WhimsicalTheme.deepRose.opacity(0.9)
-            ]
-        case 4:
-            return [
                 WhimsicalTheme.deepLavender.opacity(0.8),
                 WhimsicalTheme.deepRose.opacity(0.6),
                 WhimsicalTheme.lavender.opacity(0.9),
@@ -172,7 +150,31 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.lavender.opacity(0.8),
                 WhimsicalTheme.deepLavender.opacity(0.6)
             ]
+        case 4:
+            return [
+                WhimsicalTheme.deepRose.opacity(0.9),
+                WhimsicalTheme.deepLavender.opacity(0.7),
+                WhimsicalTheme.deepRose.opacity(0.8),
+                WhimsicalTheme.lavender.opacity(0.6),
+                WhimsicalTheme.deepRose,
+                WhimsicalTheme.deepLavender.opacity(0.8),
+                WhimsicalTheme.blushPink.opacity(0.5),
+                WhimsicalTheme.deepRose.opacity(0.85),
+                WhimsicalTheme.deepLavender.opacity(0.7)
+            ]
         case 5:
+            return [
+                WhimsicalTheme.deepSage.opacity(0.7),
+                WhimsicalTheme.deepLavender.opacity(0.6),
+                WhimsicalTheme.deepRose.opacity(0.5),
+                WhimsicalTheme.deepSage.opacity(0.5),
+                WhimsicalTheme.deepLavender.opacity(0.7),
+                WhimsicalTheme.deepRose.opacity(0.6),
+                WhimsicalTheme.sageGreen.opacity(0.5),
+                WhimsicalTheme.deepSage.opacity(0.6),
+                WhimsicalTheme.deepLavender.opacity(0.5)
+            ]
+        case 6:
             return [
                 WhimsicalTheme.warmPeach.opacity(0.7),
                 WhimsicalTheme.deepRose.opacity(0.8),
