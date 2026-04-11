@@ -717,9 +717,19 @@ struct LiveQuestScreen: View {
     private var scannerSection: some View {
         VStack(spacing: 20) {
             ZStack {
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(.white.opacity(0.06))
-                    .frame(height: 140)
+                Color.clear
+                    .frame(height: 180)
+                    .overlay {
+                        if let image = capturedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .allowsHitTesting(false)
+                        } else {
+                            Color.white.opacity(0.06)
+                        }
+                    }
+                    .clipShape(.rect(cornerRadius: 18))
                     .overlay(
                         RoundedRectangle(cornerRadius: 18)
                             .stroke(WhimsicalTheme.deepRose.opacity(0.5), lineWidth: 1.5)
@@ -742,7 +752,7 @@ struct LiveQuestScreen: View {
                         .opacity(scanLineOpacity)
                         .position(x: geo.size.width / 2, y: scanLineY)
                 }
-                .frame(height: 140)
+                .frame(height: 180)
                 .clipShape(.rect(cornerRadius: 18))
 
                 if phase == .complete {
