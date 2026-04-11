@@ -32,21 +32,18 @@ struct ProfileView: View {
                 FeedbackView()
 
                 Button {
-                    showResetConfirm = true
+                    resetTapCount += 1
+                    if resetTapCount >= 5 {
+                        showResetConfirm = true
+                        resetTapCount = 0
+                    }
                 } label: {
-                    Text("Reset Onboarding")
-                        .font(.system(size: 13, weight: .medium, design: .serif))
-                        .foregroundStyle(WhimsicalTheme.deepRose)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(WhimsicalTheme.deepRose.opacity(0.1), in: .capsule)
+                    Text("v1.0.0")
+                        .font(.system(size: 11, design: .serif))
+                        .foregroundStyle(.tertiary)
                 }
+                .buttonStyle(.plain)
                 .padding(.top, 8)
-
-                Text("v1.0.0")
-                    .font(.system(size: 11, design: .serif))
-                    .foregroundStyle(.tertiary)
-                    .padding(.top, 4)
 
                 Spacer(minLength: 40)
             }
@@ -74,11 +71,10 @@ struct ProfileView: View {
         .alert("Reset Onboarding?", isPresented: $showResetConfirm) {
             Button("Reset", role: .destructive) {
                 hasCompletedOnboarding = false
-                NotificationCenter.default.post(name: .resetOnboarding, object: nil)
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This will restart the onboarding flow immediately.")
+            Text("The app will restart with the onboarding flow. Force quit and reopen after this.")
         }
         .sheet(isPresented: $showRankSheet) {
             RankBadgeSheet(currentRank: dataService.currentRank, totalSteps: dataService.stats.totalStepsAllTime)
