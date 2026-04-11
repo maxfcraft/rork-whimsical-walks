@@ -73,12 +73,7 @@ struct IdentityShiftScreen: View {
     let onContinue: () -> Void
     @State private var titleVisible: Bool = false
     @State private var subtitleVisible: Bool = false
-    @State private var pathVisible: Bool = false
-    @State private var element1Visible: Bool = false
-    @State private var element2Visible: Bool = false
-    @State private var element3Visible: Bool = false
     @State private var ctaVisible: Bool = false
-    @State private var floatPhase: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -103,19 +98,11 @@ struct IdentityShiftScreen: View {
             }
             .padding(.horizontal, 28)
 
-            Spacer().frame(height: 36)
-
-            ZStack {
-                pathwayScene
-            }
-            .frame(height: 240)
-            .padding(.horizontal, 28)
-
             Spacer()
 
             Button(action: onContinue) {
                 HStack(spacing: 8) {
-                    Text("Show me")
+                    Text("Show me how")
                         .font(.system(size: 18, weight: .bold, design: .serif))
                     Image(systemName: "arrow.right")
                         .font(.system(size: 16, weight: .bold))
@@ -139,125 +126,13 @@ struct IdentityShiftScreen: View {
             withAnimation(.easeOut(duration: 0.6).delay(0.7)) {
                 subtitleVisible = true
             }
-            withAnimation(.spring(response: 0.7, dampingFraction: 0.8).delay(1.0)) {
-                pathVisible = true
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(1.4)) {
-                element1Visible = true
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(1.7)) {
-                element2Visible = true
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7).delay(2.0)) {
-                element3Visible = true
-            }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(2.3)) {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(1.2)) {
                 ctaVisible = true
             }
-            withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true).delay(1.5)) {
-                floatPhase = true
-            }
         }
     }
 
-    private var pathwayScene: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 28)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.95, green: 0.92, blue: 0.85).opacity(0.15),
-                            Color(red: 0.85, green: 0.78, blue: 0.70).opacity(0.08)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 28)
-                        .stroke(.white.opacity(0.12), lineWidth: 1)
-                )
-                .opacity(pathVisible ? 1 : 0)
-                .scaleEffect(pathVisible ? 1 : 0.92)
 
-            VStack(spacing: 0) {
-                curvedPath
-                    .stroke(
-                        LinearGradient(
-                            colors: [.white.opacity(0.4), .white.opacity(0.15)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        style: StrokeStyle(lineWidth: 3, lineCap: .round, dash: [8, 6])
-                    )
-                    .frame(height: 200)
-            }
-            .padding(20)
-            .opacity(pathVisible ? 1 : 0)
-
-            whimsicalElement(
-                icon: "leaf.fill",
-                color: WhimsicalTheme.sageGreen,
-                label: "Hidden path",
-                xOffset: -80, yOffset: -60
-            )
-            .opacity(element1Visible ? 1 : 0)
-            .scaleEffect(element1Visible ? 1 : 0.3)
-            .offset(y: floatPhase ? -3 : 3)
-
-            whimsicalElement(
-                icon: "camera.viewfinder",
-                color: WhimsicalTheme.warmPeach,
-                label: "Quest item",
-                xOffset: 60, yOffset: -10
-            )
-            .opacity(element2Visible ? 1 : 0)
-            .scaleEffect(element2Visible ? 1 : 0.3)
-            .offset(y: floatPhase ? 3 : -3)
-
-            whimsicalElement(
-                icon: "sparkles",
-                color: WhimsicalTheme.blushPink,
-                label: "Whimsy spot",
-                xOffset: -50, yOffset: 60
-            )
-            .opacity(element3Visible ? 1 : 0)
-            .scaleEffect(element3Visible ? 1 : 0.3)
-            .offset(y: floatPhase ? -2 : 2)
-        }
-    }
-
-    private var curvedPath: Path {
-        Path { path in
-            path.move(to: CGPoint(x: 60, y: 180))
-            path.addCurve(
-                to: CGPoint(x: 240, y: 20),
-                control1: CGPoint(x: 100, y: 100),
-                control2: CGPoint(x: 200, y: 80)
-            )
-        }
-    }
-
-    private func whimsicalElement(icon: String, color: Color, label: String, xOffset: CGFloat, yOffset: CGFloat) -> some View {
-        VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.25))
-                    .frame(width: 50, height: 50)
-                Circle()
-                    .fill(.white.opacity(0.15))
-                    .frame(width: 50, height: 50)
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .foregroundStyle(.white.opacity(0.95))
-            }
-            .shadow(color: color.opacity(0.4), radius: 10)
-            Text(label)
-                .font(.system(size: 10, weight: .semibold, design: .serif))
-                .foregroundStyle(.white.opacity(0.7))
-        }
-        .offset(x: xOffset, y: yOffset)
-    }
 }
 
 // MARK: - Screen 3: Feature Preview
@@ -1215,7 +1090,6 @@ struct OnboardingReviewScreen: View {
     let onContinue: () -> Void
     @State private var headerVisible: Bool = false
     @State private var sparkleScale: CGFloat = 0.5
-    @State private var ctaVisible: Bool = false
     @State private var hasRequestedReview: Bool = false
     @State private var sparkleRotation: Double = 0
     @Environment(\.requestReview) private var requestReview
@@ -1267,43 +1141,6 @@ struct OnboardingReviewScreen: View {
             .offset(y: headerVisible ? 0 : 20)
 
             Spacer()
-
-            VStack(spacing: 14) {
-                Button {
-                    if !hasRequestedReview {
-                        requestReview()
-                        hasRequestedReview = true
-                    }
-                    Task {
-                        try? await Task.sleep(for: .seconds(0.5))
-                        onContinue()
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "heart.fill")
-                            .font(.body)
-                        Text("Rate & Continue")
-                            .font(.system(size: 18, weight: .bold, design: .serif))
-                    }
-                    .foregroundStyle(WhimsicalTheme.deepRose)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 17)
-                    .background(.white, in: Capsule())
-                    .shadow(color: WhimsicalTheme.deepRose.opacity(0.3), radius: 12, x: 0, y: 4)
-                }
-
-                Button {
-                    onContinue()
-                } label: {
-                    Text("Maybe later")
-                        .font(.system(size: 15, weight: .medium, design: .serif))
-                        .foregroundStyle(.white.opacity(0.5))
-                }
-            }
-            .padding(.horizontal, 32)
-            .opacity(ctaVisible ? 1 : 0)
-            .offset(y: ctaVisible ? 0 : 16)
-
             Spacer().frame(height: 80)
         }
         .onAppear {
@@ -1313,11 +1150,17 @@ struct OnboardingReviewScreen: View {
             withAnimation(.spring(response: 0.8, dampingFraction: 0.5).delay(0.4)) {
                 sparkleScale = 1.0
             }
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(1.0)) {
-                ctaVisible = true
-            }
             withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
                 sparkleRotation = .pi * 2
+            }
+            Task {
+                try? await Task.sleep(for: .seconds(1.2))
+                if !hasRequestedReview {
+                    requestReview()
+                    hasRequestedReview = true
+                }
+                try? await Task.sleep(for: .seconds(2.0))
+                onContinue()
             }
         }
     }

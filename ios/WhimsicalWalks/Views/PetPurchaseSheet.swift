@@ -110,26 +110,7 @@ struct PetPurchaseSheet: View {
                     .foregroundStyle(.secondary)
                 }
 
-                Button {
-                    withAnimation(.spring(response: 0.3)) {
-                        dataService.unlockPetInstantly(pet)
-                        purchaseSuccess = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                        dismiss()
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "dollarsign.circle.fill")
-                            .font(.callout)
-                        Text("Unlock for $1.99")
-                            .font(.system(.body, design: .serif, weight: .semibold))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(WhimsicalTheme.blushPink.opacity(0.5), in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.primary)
-                }
+
             }
             .padding(.horizontal, 4)
 
