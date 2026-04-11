@@ -1,6 +1,10 @@
 import SwiftUI
 import RevenueCat
 
+extension Notification.Name {
+    static let resetOnboarding = Notification.Name("resetOnboarding")
+}
+
 @main
 struct WhimsicalWalksApp: App {
     @State private var showSplash: Bool = true
@@ -70,6 +74,11 @@ struct WhimsicalWalksApp: App {
                 await store.checkStatus()
                 if store.isPremium && !hasCompletedOnboarding {
                     hasCompletedOnboarding = true
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .resetOnboarding)) { _ in
+                withAnimation(.easeOut(duration: 0.3)) {
+                    showOnboarding = true
                 }
             }
         }

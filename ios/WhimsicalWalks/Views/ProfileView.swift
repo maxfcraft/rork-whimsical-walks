@@ -31,13 +31,22 @@ struct ProfileView: View {
                 flowerDivider
                 FeedbackView()
 
+                Button {
+                    showResetConfirm = true
+                } label: {
+                    Text("Reset Onboarding")
+                        .font(.system(size: 13, weight: .medium, design: .serif))
+                        .foregroundStyle(WhimsicalTheme.deepRose)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(WhimsicalTheme.deepRose.opacity(0.1), in: .capsule)
+                }
+                .padding(.top, 8)
+
                 Text("v1.0.0")
                     .font(.system(size: 11, design: .serif))
                     .foregroundStyle(.tertiary)
-                    .onLongPressGesture(minimumDuration: 2) {
-                        showResetConfirm = true
-                    }
-                    .padding(.top, 8)
+                    .padding(.top, 4)
 
                 Spacer(minLength: 40)
             }
@@ -65,10 +74,11 @@ struct ProfileView: View {
         .alert("Reset Onboarding?", isPresented: $showResetConfirm) {
             Button("Reset", role: .destructive) {
                 hasCompletedOnboarding = false
+                NotificationCenter.default.post(name: .resetOnboarding, object: nil)
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("The app will restart with the onboarding flow. Force quit and reopen after this.")
+            Text("This will restart the onboarding flow immediately.")
         }
         .sheet(isPresented: $showRankSheet) {
             RankBadgeSheet(currentRank: dataService.currentRank, totalSteps: dataService.stats.totalStepsAllTime)
