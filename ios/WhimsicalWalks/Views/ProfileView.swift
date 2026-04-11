@@ -31,19 +31,13 @@ struct ProfileView: View {
                 flowerDivider
                 FeedbackView()
 
-                Button {
-                    resetTapCount += 1
-                    if resetTapCount >= 5 {
+                Text("v1.0.0")
+                    .font(.system(size: 11, design: .serif))
+                    .foregroundStyle(.tertiary)
+                    .onLongPressGesture(minimumDuration: 2) {
                         showResetConfirm = true
-                        resetTapCount = 0
                     }
-                } label: {
-                    Text("v1.0.0")
-                        .font(.system(size: 11, design: .serif))
-                        .foregroundStyle(.tertiary)
-                }
-                .buttonStyle(.plain)
-                .padding(.top, 8)
+                    .padding(.top, 8)
 
                 Spacer(minLength: 40)
             }
