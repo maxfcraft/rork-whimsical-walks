@@ -4,7 +4,6 @@ import RevenueCat
 @main
 struct WhimsicalWalksApp: App {
     @State private var showSplash: Bool = true
-    @State private var showOnboarding: Bool = false
     @State private var store = StoreViewModel()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
 
@@ -39,15 +38,14 @@ struct WhimsicalWalksApp: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                if showOnboarding && !hasCompletedOnboarding {
+                if !hasCompletedOnboarding && !showSplash {
                     OnboardingView(store: store) {
                         withAnimation(.easeOut(duration: 0.5)) {
                             hasCompletedOnboarding = true
-                            showOnboarding = false
                         }
                     }
                     .transition(.opacity)
-                } else if !showSplash {
+                } else if !showSplash && hasCompletedOnboarding {
                     ContentView(store: store)
                         .transition(.opacity)
                 }
@@ -56,9 +54,6 @@ struct WhimsicalWalksApp: App {
                     SplashView {
                         withAnimation(.easeOut(duration: 0.3)) {
                             showSplash = false
-                            if !hasCompletedOnboarding {
-                                showOnboarding = true
-                            }
                         }
                     }
                     .transition(.opacity)
