@@ -6,7 +6,7 @@ struct OnboardingView: View {
     let onComplete: () -> Void
     @State private var currentPage: Int = 0
 
-    private let totalPages: Int = 4
+    private let totalPages: Int = 7
 
     var body: some View {
         ZStack {
@@ -17,15 +17,21 @@ struct OnboardingView: View {
                     .tag(0)
                 QuestDemoScreen()
                     .tag(1)
-                WalkingStatsScreen()
+                FeatureShowcaseScreen()
                     .tag(2)
-                OnboardingPaywallScreen(store: store, onComplete: onComplete)
+                WalkingStatsScreen()
                     .tag(3)
+                PersonalizationScreen()
+                    .tag(4)
+                ReviewScreen(onContinue: { withAnimation { currentPage = 6 } })
+                    .tag(5)
+                OnboardingPaywallScreen(store: store, onComplete: onComplete)
+                    .tag(6)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.spring(response: 0.5, dampingFraction: 0.85), value: currentPage)
 
-            if currentPage < 3 {
+            if currentPage < 6 {
                 VStack {
                     Spacer()
                     pageControls
@@ -65,7 +71,7 @@ struct OnboardingView: View {
 
             Spacer()
 
-            if currentPage < 2 {
+            if currentPage < 5 {
                 Button {
                     withAnimation { currentPage += 1 }
                 } label: {
@@ -74,15 +80,8 @@ struct OnboardingView: View {
                         .foregroundStyle(.white.opacity(0.8))
                         .frame(width: 44, height: 44)
                 }
-            } else if currentPage == 2 {
-                Button {
-                    withAnimation { currentPage = 3 }
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
-                        .frame(width: 44, height: 44)
-                }
+            } else if currentPage == 5 {
+                Spacer().frame(width: 44)
             } else {
                 Spacer().frame(width: 44)
             }
@@ -139,6 +138,18 @@ struct OnboardingBackground: View {
             ]
         case 2:
             return [
+                WhimsicalTheme.deepRose.opacity(0.85),
+                WhimsicalTheme.deepLavender.opacity(0.75),
+                WhimsicalTheme.deepRose.opacity(0.6),
+                WhimsicalTheme.deepSage.opacity(0.5),
+                WhimsicalTheme.deepRose.opacity(0.7),
+                WhimsicalTheme.deepLavender.opacity(0.8),
+                WhimsicalTheme.blushPink.opacity(0.7),
+                WhimsicalTheme.deepRose.opacity(0.65),
+                WhimsicalTheme.deepLavender.opacity(0.9)
+            ]
+        case 3:
+            return [
                 WhimsicalTheme.deepSage.opacity(0.9),
                 WhimsicalTheme.deepRose.opacity(0.7),
                 WhimsicalTheme.deepLavender.opacity(0.8),
@@ -148,6 +159,30 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.blushPink.opacity(0.6),
                 WhimsicalTheme.deepSage.opacity(0.8),
                 WhimsicalTheme.deepRose.opacity(0.9)
+            ]
+        case 4:
+            return [
+                WhimsicalTheme.deepLavender.opacity(0.8),
+                WhimsicalTheme.deepRose.opacity(0.6),
+                WhimsicalTheme.lavender.opacity(0.9),
+                WhimsicalTheme.deepRose.opacity(0.5),
+                WhimsicalTheme.deepLavender.opacity(0.9),
+                WhimsicalTheme.blushPink.opacity(0.7),
+                WhimsicalTheme.deepRose.opacity(0.7),
+                WhimsicalTheme.lavender.opacity(0.8),
+                WhimsicalTheme.deepLavender.opacity(0.6)
+            ]
+        case 5:
+            return [
+                WhimsicalTheme.warmPeach.opacity(0.7),
+                WhimsicalTheme.deepRose.opacity(0.8),
+                WhimsicalTheme.deepLavender.opacity(0.6),
+                WhimsicalTheme.deepRose.opacity(0.6),
+                WhimsicalTheme.warmPeach.opacity(0.8),
+                WhimsicalTheme.deepRose.opacity(0.7),
+                WhimsicalTheme.deepLavender.opacity(0.7),
+                WhimsicalTheme.blushPink.opacity(0.8),
+                WhimsicalTheme.deepRose.opacity(0.6)
             ]
         default:
             return [

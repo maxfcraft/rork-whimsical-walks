@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct AdventureIntroScreen: View {
     @State private var titleVisible: Bool = false
@@ -54,10 +55,12 @@ struct AdventureIntroScreen: View {
     }
 }
 
+// MARK: - Quest Demo Screen
+
 struct QuestDemoScreen: View {
-    @State private var phase: DemoPhase = .intro
+    @State private var phase: QuestDemoPhase = .intro
     @State private var bubbleVisible: Bool = false
-    @State private var verifyButtonVisible: Bool = false
+    @State private var photoButtonVisible: Bool = false
     @State private var scannerActive: Bool = false
     @State private var scanLineY: CGFloat = 0
     @State private var scanLineOpacity: Double = 0
@@ -68,9 +71,10 @@ struct QuestDemoScreen: View {
     @State private var addedVisible: Bool = false
     @State private var sparklesActive: Bool = false
     @State private var introTextVisible: Bool = false
+    @State private var photoThumbnailVisible: Bool = false
 
-    private enum DemoPhase {
-        case intro, quest, verifying, complete
+    private enum QuestDemoPhase {
+        case intro, quest, photoTaken, verifying, complete
     }
 
     var body: some View {
@@ -82,17 +86,21 @@ struct QuestDemoScreen: View {
                     DemoSparkleOverlay()
                 }
 
-                VStack(spacing: 24) {
+                VStack(spacing: 20) {
                     if phase == .intro {
                         introContent
                     }
 
                     if phase != .intro {
-                        questBubble
+                        questCard
                     }
 
                     if phase == .quest {
-                        verifyButton
+                        takePhotoButton
+                    }
+
+                    if phase == .photoTaken {
+                        photoPreview
                     }
 
                     if phase == .verifying {
@@ -131,9 +139,9 @@ struct QuestDemoScreen: View {
         .offset(y: introTextVisible ? 0 : 16)
     }
 
-    private var questBubble: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
+    private var questCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
                 Circle()
                     .fill(WhimsicalTheme.softPink)
                     .frame(width: 10, height: 10)
@@ -149,11 +157,11 @@ struct QuestDemoScreen: View {
                     .foregroundStyle(.white.opacity(0.5))
             }
 
-            Text("Snap the most whimsical\nobject in your room")
+            Text("Find Something Pink")
                 .font(.system(.headline, design: .serif))
                 .foregroundStyle(.white)
 
-            Text("Look around you - what catches your eye? A quirky mug, a colorful plant, something magical?")
+            Text("Spot something pink on your walk and take a mental snapshot")
                 .font(.system(.subheadline, design: .serif))
                 .foregroundStyle(.white.opacity(0.7))
                 .fixedSize(horizontal: false, vertical: true)
@@ -170,11 +178,11 @@ struct QuestDemoScreen: View {
         .scaleEffect(bubbleVisible ? 1 : 0.9)
     }
 
-    private var verifyButton: some View {
+    private var takePhotoButton: some View {
         Button {
-            startVerification()
+            startPhotoFlow()
         } label: {
-            Label("Verify Quest", systemImage: "camera.viewfinder")
+            Label("Take Photo", systemImage: "camera.fill")
                 .font(.system(.body, design: .serif, weight: .semibold))
                 .foregroundStyle(WhimsicalTheme.deepRose)
                 .frame(maxWidth: .infinity)
@@ -182,8 +190,65 @@ struct QuestDemoScreen: View {
                 .background(.white, in: .rect(cornerRadius: 14))
                 .shadow(color: WhimsicalTheme.deepRose.opacity(0.3), radius: 10, x: 0, y: 4)
         }
-        .opacity(verifyButtonVisible ? 1 : 0)
-        .offset(y: verifyButtonVisible ? 0 : 16)
+        .opacity(photoButtonVisible ? 1 : 0)
+        .offset(y: photoButtonVisible ? 0 : 16)
+    }
+
+    private var photoPreview: some View {
+        VStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(.white.opacity(0.12))
+                    .frame(height: 100)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+
+                HStack(spacing: 14) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(
+                            LinearGradient(
+                                colors: [WhimsicalTheme.blushPink, WhimsicalTheme.deepRose.opacity(0.6)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 64, height: 64)
+                        .overlay {
+                            Image(systemName: "photo.fill")
+                                .font(.title2)
+                                .foregroundStyle(.white.opacity(0.8))
+                        }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Photo captured!")
+                            .font(.system(.subheadline, design: .serif, weight: .semibold))
+                            .foregroundStyle(.white)
+                        Text("Ready to verify your quest")
+                            .font(.system(.caption, design: .serif))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+            }
+
+            Button {
+                startVerification()
+            } label: {
+                Label("Verify Quest", systemImage: "camera.viewfinder")
+                    .font(.system(.body, design: .serif, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(WhimsicalTheme.deepRose, in: .rect(cornerRadius: 14))
+                    .shadow(color: WhimsicalTheme.deepRose.opacity(0.5), radius: 10, x: 0, y: 4)
+            }
+        }
+        .opacity(photoThumbnailVisible ? 1 : 0)
+        .offset(y: photoThumbnailVisible ? 0 : 20)
     }
 
     private var scannerSection: some View {
@@ -276,25 +341,39 @@ struct QuestDemoScreen: View {
                 bubbleVisible = true
             }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.6)) {
-                verifyButtonVisible = true
+                photoButtonVisible = true
+            }
+        }
+    }
+
+    private func startPhotoFlow() {
+        withAnimation(.easeOut(duration: 0.3)) {
+            photoButtonVisible = false
+        }
+
+        Task {
+            try? await Task.sleep(for: .seconds(0.4))
+            phase = .photoTaken
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                photoThumbnailVisible = true
             }
         }
     }
 
     private func startVerification() {
         withAnimation(.easeOut(duration: 0.3)) {
-            verifyButtonVisible = false
+            photoThumbnailVisible = false
         }
 
         Task {
             try? await Task.sleep(for: .seconds(0.3))
             phase = .verifying
             scannerActive = true
+            sparklesActive = true
 
             withAnimation(.easeIn(duration: 0.3)) {
                 scanLineOpacity = 1.0
                 scanTextOpacity = 1.0
-                sparklesActive = true
             }
 
             scanText = "Analyzing photo..."
@@ -393,6 +472,159 @@ struct DemoSparkleOverlay: View {
         .ignoresSafeArea()
     }
 }
+
+// MARK: - Feature Showcase Screen
+
+struct FeatureShowcaseScreen: View {
+    @State private var headerVisible: Bool = false
+    @State private var card1Visible: Bool = false
+    @State private var card2Visible: Bool = false
+    @State private var card3Visible: Bool = false
+    @State private var polaroidTilt: Double = 0
+    @State private var questFlip: Bool = false
+    @State private var petBounce: CGFloat = 0
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+
+            Text("Your Walks,\nReimagined")
+                .font(.system(size: 28, weight: .bold, design: .serif))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+                .opacity(headerVisible ? 1 : 0)
+                .offset(y: headerVisible ? 0 : 16)
+
+            Spacer().frame(height: 28)
+
+            VStack(spacing: 16) {
+                featureCard(
+                    icon: "camera.filters",
+                    iconColor: WhimsicalTheme.deepRose,
+                    title: "Whimsical Polaroids",
+                    subtitle: "Turn walks into magical memories\nwith fantasy filters",
+                    miniView: AnyView(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [WhimsicalTheme.blushPink, WhimsicalTheme.deepRose.opacity(0.5)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "sparkle")
+                                .font(.system(size: 18))
+                                .foregroundStyle(.white)
+                        }
+                        .rotationEffect(.degrees(polaroidTilt))
+                    )
+                )
+                .opacity(card1Visible ? 1 : 0)
+                .offset(x: card1Visible ? 0 : -60)
+
+                featureCard(
+                    icon: "map.fill",
+                    iconColor: WhimsicalTheme.deepLavender,
+                    title: "Daily Quests",
+                    subtitle: "Fun photo adventures that make\nevery walk an expedition",
+                    miniView: AnyView(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(WhimsicalTheme.deepLavender.opacity(0.3))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "map.fill")
+                                .font(.system(size: 18))
+                                .foregroundStyle(WhimsicalTheme.deepLavender)
+                                .scaleEffect(questFlip ? 1.15 : 1.0)
+                        }
+                    )
+                )
+                .opacity(card2Visible ? 1 : 0)
+                .offset(x: card2Visible ? 0 : 60)
+
+                featureCard(
+                    icon: "pawprint.fill",
+                    iconColor: WhimsicalTheme.deepSage,
+                    title: "Collect Companions",
+                    subtitle: "Earn adorable pets as you explore\nthe world around you",
+                    miniView: AnyView(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(WhimsicalTheme.deepSage.opacity(0.3))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "pawprint.fill")
+                                .font(.system(size: 18))
+                                .foregroundStyle(WhimsicalTheme.deepSage)
+                                .offset(y: petBounce)
+                        }
+                    )
+                )
+                .opacity(card3Visible ? 1 : 0)
+                .offset(x: card3Visible ? 0 : -60)
+            }
+            .padding(.horizontal, 28)
+
+            Spacer()
+            Spacer().frame(height: 80)
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                headerVisible = true
+            }
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.5)) {
+                card1Visible = true
+            }
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.8)) {
+                card2Visible = true
+            }
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(1.1)) {
+                card3Visible = true
+            }
+            startMiniAnimations()
+        }
+    }
+
+    private func featureCard(icon: String, iconColor: Color, title: String, subtitle: String, miniView: AnyView) -> some View {
+        HStack(spacing: 14) {
+            miniView
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 17, weight: .bold, design: .serif))
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.system(size: 13, weight: .medium, design: .serif))
+                    .foregroundStyle(.white.opacity(0.7))
+                    .lineSpacing(2)
+            }
+
+            Spacer()
+        }
+        .padding(16)
+        .background(.white.opacity(0.15), in: .rect(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(.white.opacity(0.15), lineWidth: 1)
+        )
+    }
+
+    private func startMiniAnimations() {
+        withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true).delay(0.6)) {
+            polaroidTilt = 8
+        }
+        withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true).delay(1.0)) {
+            questFlip = true
+        }
+        withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true).delay(1.3)) {
+            petBounce = -6
+        }
+    }
+}
+
+// MARK: - Walking Stats Screen
 
 struct WalkingStatsScreen: View {
     @State private var ringProgress: CGFloat = 0
@@ -519,5 +751,299 @@ struct StatBubble: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white.opacity(0.12), in: .rect(cornerRadius: 16))
+    }
+}
+
+// MARK: - Personalization Screen
+
+struct PersonalizationScreen: View {
+    @State private var headerVisible: Bool = false
+    @State private var nameFieldVisible: Bool = false
+    @State private var goalPickerVisible: Bool = false
+    @State private var userName: String = ""
+    @State private var selectedGoal: Int = 7500
+    @FocusState private var nameFieldFocused: Bool
+
+    private let goalOptions: [(label: String, value: Int, emoji: String)] = [
+        ("3,000", 3000, "🌱"),
+        ("5,000", 5000, "🌿"),
+        ("7,500", 7500, "🌳"),
+        ("10,000", 10000, "🏔️"),
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+
+            VStack(spacing: 8) {
+                Text("Make It Yours")
+                    .font(.system(size: 28, weight: .bold, design: .serif))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+
+                Text("We'll tailor your adventure just for you")
+                    .font(.system(size: 16, weight: .medium, design: .serif))
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+            .opacity(headerVisible ? 1 : 0)
+            .offset(y: headerVisible ? 0 : 16)
+
+            Spacer().frame(height: 32)
+
+            VStack(spacing: 24) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("What should we call you?")
+                        .font(.system(size: 15, weight: .semibold, design: .serif))
+                        .foregroundStyle(.white.opacity(0.9))
+
+                    TextField("Your name", text: $userName)
+                        .font(.system(size: 18, weight: .medium, design: .serif))
+                        .foregroundStyle(.white)
+                        .padding(16)
+                        .background(.white.opacity(0.15), in: .rect(cornerRadius: 16))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(.white.opacity(0.25), lineWidth: 1)
+                        )
+                        .focused($nameFieldFocused)
+                        .tint(.white)
+                        .autocorrectionDisabled()
+                }
+                .opacity(nameFieldVisible ? 1 : 0)
+                .offset(y: nameFieldVisible ? 0 : 20)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Daily step goal")
+                        .font(.system(size: 15, weight: .semibold, design: .serif))
+                        .foregroundStyle(.white.opacity(0.9))
+
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(goalOptions, id: \.value) { option in
+                            Button {
+                                selectedGoal = option.value
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Text(option.emoji)
+                                        .font(.title3)
+                                    Text(option.label)
+                                        .font(.system(size: 16, weight: .semibold, design: .serif))
+                                        .foregroundStyle(.white)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(
+                                    selectedGoal == option.value
+                                        ? Color.white.opacity(0.25)
+                                        : Color.white.opacity(0.1),
+                                    in: .rect(cornerRadius: 14)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .stroke(
+                                            selectedGoal == option.value
+                                                ? Color.white.opacity(0.5)
+                                                : Color.clear,
+                                            lineWidth: 1.5
+                                        )
+                                )
+                            }
+                            .sensoryFeedback(.selection, trigger: selectedGoal)
+                        }
+                    }
+                }
+                .opacity(goalPickerVisible ? 1 : 0)
+                .offset(y: goalPickerVisible ? 0 : 20)
+            }
+            .padding(.horizontal, 28)
+
+            Spacer()
+            Spacer().frame(height: 80)
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                headerVisible = true
+            }
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.5)) {
+                nameFieldVisible = true
+            }
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.8)) {
+                goalPickerVisible = true
+            }
+        }
+        .onDisappear {
+            savePersonalization()
+        }
+        .onChange(of: nameFieldFocused) { _, _ in }
+    }
+
+    private func savePersonalization() {
+        let trimmed = userName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty {
+            UserDefaults.standard.set(trimmed, forKey: "whimsical_user_name")
+        }
+        UserDefaults.standard.set(selectedGoal, forKey: "whimsical_step_goal")
+    }
+}
+
+// MARK: - Review Screen
+
+struct ReviewScreen: View {
+    let onContinue: () -> Void
+    @State private var headerVisible: Bool = false
+    @State private var starsVisible: Bool = false
+    @State private var testimonialsVisible: Bool = false
+    @State private var ctaVisible: Bool = false
+    @State private var starScale: [CGFloat] = [0, 0, 0, 0, 0]
+    @State private var hasRequestedReview: Bool = false
+    @Environment(\.requestReview) private var requestReview
+
+    private let testimonials: [(text: String, author: String)] = [
+        ("This app made walking fun again! I actually look forward to my daily walk now.", "Sarah K."),
+        ("My kids love doing the quests with me. We've discovered so many hidden gems in our neighborhood.", "Mike T."),
+        ("The polaroid filters are gorgeous. My camera roll is full of whimsical memories!", "Emma L."),
+    ]
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 0) {
+                Spacer().frame(height: 80)
+
+                VStack(spacing: 12) {
+                    Text("Enjoying the\nVibes So Far?")
+                        .font(.system(size: 28, weight: .bold, design: .serif))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+
+                    Text("You're about to unlock something special")
+                        .font(.system(size: 16, weight: .medium, design: .serif))
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+                .opacity(headerVisible ? 1 : 0)
+                .offset(y: headerVisible ? 0 : 16)
+
+                Spacer().frame(height: 24)
+
+                HStack(spacing: 8) {
+                    ForEach(0..<5, id: \.self) { i in
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 28))
+                            .foregroundStyle(.yellow)
+                            .shadow(color: .yellow.opacity(0.4), radius: 6)
+                            .scaleEffect(starScale[i])
+                    }
+                }
+                .opacity(starsVisible ? 1 : 0)
+
+                Spacer().frame(height: 28)
+
+                VStack(spacing: 12) {
+                    ForEach(Array(testimonials.enumerated()), id: \.offset) { index, testimonial in
+                        TestimonialBubble(text: testimonial.text, author: testimonial.author)
+                            .opacity(testimonialsVisible ? 1 : 0)
+                            .offset(y: testimonialsVisible ? 0 : 20)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(Double(index) * 0.2), value: testimonialsVisible)
+                    }
+                }
+                .padding(.horizontal, 28)
+
+                Spacer().frame(height: 28)
+
+                VStack(spacing: 14) {
+                    Button {
+                        if !hasRequestedReview {
+                            requestReview()
+                            hasRequestedReview = true
+                        }
+                        Task {
+                            try? await Task.sleep(for: .seconds(0.5))
+                            onContinue()
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "heart.fill")
+                                .font(.body)
+                            Text("Rate & Continue")
+                                .font(.system(size: 18, weight: .bold, design: .serif))
+                        }
+                        .foregroundStyle(WhimsicalTheme.deepRose)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 17)
+                        .background(.white, in: Capsule())
+                        .shadow(color: WhimsicalTheme.deepRose.opacity(0.3), radius: 12, x: 0, y: 4)
+                    }
+
+                    Button {
+                        onContinue()
+                    } label: {
+                        Text("Maybe later")
+                            .font(.system(size: 15, weight: .medium, design: .serif))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                }
+                .padding(.horizontal, 28)
+                .opacity(ctaVisible ? 1 : 0)
+                .offset(y: ctaVisible ? 0 : 16)
+
+                Spacer().frame(height: 60)
+            }
+        }
+        .scrollDismissesKeyboard(.immediately)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5).delay(0.2)) {
+                headerVisible = true
+            }
+            withAnimation(.easeOut(duration: 0.3).delay(0.5)) {
+                starsVisible = true
+            }
+            animateStars()
+            withAnimation(.easeOut(duration: 0.5).delay(1.0)) {
+                testimonialsVisible = true
+            }
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(1.8)) {
+                ctaVisible = true
+            }
+        }
+    }
+
+    private func animateStars() {
+        for i in 0..<5 {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.5).delay(0.6 + Double(i) * 0.1)) {
+                starScale[i] = 1.0
+            }
+        }
+    }
+}
+
+struct TestimonialBubble: View {
+    let text: String
+    let author: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 4) {
+                ForEach(0..<5, id: \.self) { _ in
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.yellow.opacity(0.9))
+                }
+            }
+
+            Text("\"\(text)\"")
+                .font(.system(size: 14, weight: .medium, design: .serif))
+                .foregroundStyle(.white.opacity(0.9))
+                .italic()
+
+            Text("— \(author)")
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .foregroundStyle(.white.opacity(0.6))
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.white.opacity(0.12), in: .rect(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(.white.opacity(0.1), lineWidth: 1)
+        )
     }
 }
