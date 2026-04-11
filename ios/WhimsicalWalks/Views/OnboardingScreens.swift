@@ -80,7 +80,7 @@ struct IdentityShiftScreen: View {
             Spacer()
 
             VStack(spacing: 20) {
-                Text("Become the kind of person\nwho sees magic everywhere")
+                Text("Start noticing the things\nyou usually walk past")
                     .font(.system(size: 28, weight: .bold, design: .serif))
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
@@ -88,7 +88,7 @@ struct IdentityShiftScreen: View {
                     .opacity(titleVisible ? 1 : 0)
                     .offset(y: titleVisible ? 0 : 24)
 
-                Text("Small walks. Unexpected moments.\nA life that feels different.")
+                Text("Flowers. Sunlight. Little moments.\nYour walks won't feel the same again.")
                     .font(.system(size: 16, weight: .medium, design: .serif))
                     .foregroundStyle(.white.opacity(0.85))
                     .multilineTextAlignment(.center)
