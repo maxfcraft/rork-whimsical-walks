@@ -8,7 +8,7 @@ struct OnboardingView: View {
     @State private var onboardingPhoto: UIImage?
     @State private var onboardingPhotoPath: String?
 
-    private let totalPages: Int = 8
+    private let totalPages: Int = 9
 
     var body: some View {
         ZStack {
@@ -23,8 +23,10 @@ struct OnboardingView: View {
                 case 2:
                     FeaturePreviewScreen(onContinue: { advance() })
                 case 3:
-                    OnboardingPersonalizationScreen(onContinue: { advance() })
+                    OnboardingNameScreen(onContinue: { advance() })
                 case 4:
+                    OnboardingReasonScreen(onContinue: { advance() })
+                case 5:
                     LiveQuestScreen(onPhotoTaken: { image in
                         onboardingPhoto = image
                         if let path = PhotoManager.savePhoto(image) {
@@ -32,14 +34,14 @@ struct OnboardingView: View {
                         }
                         advance()
                     })
-                case 5:
+                case 6:
                     ReinforcementScreen(
                         capturedImage: onboardingPhoto,
                         onContinue: { advance() }
                     )
-                case 6:
-                    OnboardingReviewScreen(onContinue: { advance() })
                 case 7:
+                    OnboardingReviewScreen(onContinue: { advance() })
+                case 8:
                     OnboardingPaywallScreen(store: store, onComplete: onComplete)
                 default:
                     EmptyView()
@@ -50,7 +52,7 @@ struct OnboardingView: View {
                 removal: .move(edge: .leading).combined(with: .opacity)
             ))
 
-            if currentPage < 7 && currentPage != 4 {
+            if currentPage < 8 && currentPage != 5 {
                 VStack {
                     Spacer()
                     pageIndicator
@@ -116,15 +118,15 @@ struct OnboardingBackground: View {
             ]
         case 1:
             return [
-                Color(red: 0.20, green: 0.12, blue: 0.28),
-                WhimsicalTheme.deepLavender.opacity(0.6),
-                Color(red: 0.25, green: 0.15, blue: 0.32),
-                WhimsicalTheme.deepRose.opacity(0.4),
-                Color(red: 0.22, green: 0.14, blue: 0.30),
-                WhimsicalTheme.deepLavender.opacity(0.5),
-                Color(red: 0.18, green: 0.10, blue: 0.26),
-                WhimsicalTheme.deepRose.opacity(0.35),
-                Color(red: 0.24, green: 0.14, blue: 0.32)
+                Color(red: 0.98, green: 0.85, blue: 0.70),
+                Color(red: 0.95, green: 0.78, blue: 0.62),
+                Color(red: 0.92, green: 0.82, blue: 0.72),
+                Color(red: 0.96, green: 0.72, blue: 0.55),
+                Color(red: 0.94, green: 0.80, blue: 0.65),
+                Color(red: 0.90, green: 0.75, blue: 0.60),
+                Color(red: 0.97, green: 0.83, blue: 0.68),
+                Color(red: 0.88, green: 0.70, blue: 0.55),
+                Color(red: 0.95, green: 0.78, blue: 0.62)
             ]
         case 2:
             return [
@@ -138,7 +140,7 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.deepRose.opacity(0.65),
                 WhimsicalTheme.deepLavender.opacity(0.9)
             ]
-        case 3:
+        case 3, 4:
             return [
                 WhimsicalTheme.deepLavender.opacity(0.8),
                 WhimsicalTheme.deepRose.opacity(0.6),
@@ -150,7 +152,7 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.lavender.opacity(0.8),
                 WhimsicalTheme.deepLavender.opacity(0.6)
             ]
-        case 4:
+        case 5:
             return [
                 WhimsicalTheme.deepRose.opacity(0.9),
                 WhimsicalTheme.deepLavender.opacity(0.7),
@@ -162,7 +164,7 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.deepRose.opacity(0.85),
                 WhimsicalTheme.deepLavender.opacity(0.7)
             ]
-        case 5:
+        case 6:
             return [
                 WhimsicalTheme.deepSage.opacity(0.7),
                 WhimsicalTheme.deepLavender.opacity(0.6),
@@ -174,7 +176,7 @@ struct OnboardingBackground: View {
                 WhimsicalTheme.deepSage.opacity(0.6),
                 WhimsicalTheme.deepLavender.opacity(0.5)
             ]
-        case 6:
+        case 7:
             return [
                 WhimsicalTheme.warmPeach.opacity(0.7),
                 WhimsicalTheme.deepRose.opacity(0.8),

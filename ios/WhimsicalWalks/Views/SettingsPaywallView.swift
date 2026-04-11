@@ -42,7 +42,7 @@ struct SettingsPaywallView: View {
 
     var body: some View {
         ZStack {
-            OnboardingBackground(page: 5)
+            OnboardingBackground(page: 8)
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
