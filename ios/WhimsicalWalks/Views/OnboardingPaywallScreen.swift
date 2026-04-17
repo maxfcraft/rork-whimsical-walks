@@ -205,27 +205,50 @@ struct OnboardingPaywallScreen: View {
                     if success { onComplete() }
                 }
             } label: {
-                HStack(spacing: 8) {
-                    if store.isPurchasing {
-                        ProgressView()
-                            .tint(WhimsicalTheme.deepRose)
+                VStack(spacing: 4) {
+                    HStack(spacing: 8) {
+                        if store.isPurchasing {
+                            ProgressView()
+                                .tint(WhimsicalTheme.deepRose)
+                        }
+                        Text(ctaBilledText)
+                            .font(.system(size: 20, weight: .heavy, design: .serif))
                     }
-                    Text("Start Your Free Trial")
-                        .font(.system(size: 18, weight: .bold, design: .serif))
+                    Text("after 3-day free trial")
+                        .font(.system(size: 12, weight: .regular, design: .serif))
+                        .foregroundStyle(WhimsicalTheme.deepRose.opacity(0.7))
                 }
                 .foregroundStyle(WhimsicalTheme.deepRose)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 17)
+                .padding(.vertical, 14)
                 .background(.white, in: Capsule())
                 .shadow(color: WhimsicalTheme.deepRose.opacity(0.35), radius: ctaPulse ? 16 : 10, x: 0, y: ctaPulse ? 8 : 5)
             }
             .disabled(store.isPurchasing)
             .sensoryFeedback(.impact(flexibility: .soft), trigger: store.isPurchasing)
 
-            Text("Cancel anytime. No charge for 3 days.")
-                .font(.system(size: 13, weight: .regular, design: .serif))
-                .foregroundStyle(.white.opacity(0.65))
+            Text(autoRenewDisclosure)
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .foregroundStyle(.white.opacity(0.75))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
         }
+    }
+
+    private var ctaBilledText: String {
+        guard let pkg = selectedPackage else { return "Continue" }
+        let price = pkg.storeProduct.localizedPriceString
+        let period = pkg.identifier == "$rc_annual" ? "year" : "month"
+        return "\(price) per \(period)"
+    }
+
+    private var autoRenewDisclosure: String {
+        guard let pkg = selectedPackage else {
+            return "3-day free trial, then auto-renews until canceled. Cancel anytime in Settings."
+        }
+        let price = pkg.storeProduct.localizedPriceString
+        let period = pkg.identifier == "$rc_annual" ? "year" : "month"
+        return "Free for 3 days, then \(price)/\(period). Auto-renews until canceled. Cancel anytime in Settings."
     }
 
     private var footerSection: some View {
