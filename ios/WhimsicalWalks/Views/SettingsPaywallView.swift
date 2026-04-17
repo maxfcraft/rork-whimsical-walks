@@ -40,6 +40,16 @@ struct SettingsPaywallView: View {
         return formatter.string(from: perMonth as NSDecimalNumber) ?? ""
     }
 
+    private var billingDescription: String {
+        guard let pkg = selectedPackage else { return "" }
+        let price = pkg.storeProduct.localizedPriceString
+        switch pkg.packageType {
+        case .annual: return "\(price)/year, billed annually"
+        case .monthly: return "\(price)/month, billed monthly"
+        default: return "\(price)"
+        }
+    }
+
     var body: some View {
         ZStack {
             OnboardingBackground(page: 5)
@@ -112,28 +122,41 @@ struct SettingsPaywallView: View {
 
                         Spacer().frame(height: 24)
 
-                        Button {
-                            guard let pkg = selectedPackage else { return }
-                            Task {
-                                let success = await store.purchase(package: pkg)
-                                if success { dismiss() }
+                        VStack(spacing: 12) {
+                            if !billingDescription.isEmpty {
+                                Text(billingDescription)
+                                    .font(.system(size: 16, weight: .semibold, design: .serif))
+                                    .foregroundStyle(.white)
+                                    .multilineTextAlignment(.center)
                             }
-                        } label: {
-                            HStack(spacing: 8) {
-                                if store.isPurchasing {
-                                    ProgressView()
-                                        .tint(WhimsicalTheme.deepRose)
+
+                            Button {
+                                guard let pkg = selectedPackage else { return }
+                                Task {
+                                    let success = await store.purchase(package: pkg)
+                                    if success { dismiss() }
                                 }
-                                Text("Subscribe Now")
-                                    .font(.system(size: 18, weight: .bold, design: .serif))
+                            } label: {
+                                HStack(spacing: 8) {
+                                    if store.isPurchasing {
+                                        ProgressView()
+                                            .tint(WhimsicalTheme.deepRose)
+                                    }
+                                    Text("Subscribe Now")
+                                        .font(.system(size: 18, weight: .bold, design: .serif))
+                                }
+                                .foregroundStyle(WhimsicalTheme.deepRose)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 17)
+                                .background(.white, in: Capsule())
+                                .shadow(color: WhimsicalTheme.deepRose.opacity(0.3), radius: 12, x: 0, y: 6)
                             }
-                            .foregroundStyle(WhimsicalTheme.deepRose)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 17)
-                            .background(.white, in: Capsule())
-                            .shadow(color: WhimsicalTheme.deepRose.opacity(0.3), radius: 12, x: 0, y: 6)
+                            .disabled(store.isPurchasing)
+
+                            Text("Cancel anytime in your App Store settings.")
+                                .font(.system(size: 13, weight: .regular, design: .serif))
+                                .foregroundStyle(.white.opacity(0.75))
                         }
-                        .disabled(store.isPurchasing)
                     } else if store.loadFailed {
                         VStack(spacing: 16) {
                             Image(systemName: "wifi.exclamationmark")
@@ -172,7 +195,7 @@ struct SettingsPaywallView: View {
                         }
                     }
                     .font(.system(size: 14, weight: .medium, design: .serif))
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.white.opacity(0.7))
 
                     Spacer().frame(height: 12)
 
@@ -180,8 +203,8 @@ struct SettingsPaywallView: View {
                         Link("Terms of Service", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                         Link("Privacy Policy", destination: URL(string: "https://www.apple.com/legal/privacy/")!)
                     }
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.65))
 
                     Spacer().frame(height: 40)
                 }

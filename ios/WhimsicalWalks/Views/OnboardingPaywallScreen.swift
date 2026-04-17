@@ -44,6 +44,16 @@ struct OnboardingPaywallScreen: View {
         return formatter.string(from: perMonth as NSDecimalNumber) ?? ""
     }
 
+    private var billingDescription: String {
+        guard let pkg = selectedPackage else { return "" }
+        let price = pkg.storeProduct.localizedPriceString
+        switch pkg.packageType {
+        case .annual: return "then \(price)/year after your 3-day free trial"
+        case .monthly: return "then \(price)/month after your 3-day free trial"
+        default: return "then \(price) after your 3-day free trial"
+        }
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -197,7 +207,14 @@ struct OnboardingPaywallScreen: View {
     }
 
     private var ctaSection: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
+            if !billingDescription.isEmpty {
+                Text(billingDescription)
+                    .font(.system(size: 16, weight: .semibold, design: .serif))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+            }
+
             Button {
                 guard let pkg = selectedPackage else { return }
                 Task {
@@ -210,7 +227,7 @@ struct OnboardingPaywallScreen: View {
                         ProgressView()
                             .tint(WhimsicalTheme.deepRose)
                     }
-                    Text("Start Your Free Trial")
+                    Text("Try Free for 3 Days")
                         .font(.system(size: 18, weight: .bold, design: .serif))
                 }
                 .foregroundStyle(WhimsicalTheme.deepRose)
@@ -222,9 +239,9 @@ struct OnboardingPaywallScreen: View {
             .disabled(store.isPurchasing)
             .sensoryFeedback(.impact(flexibility: .soft), trigger: store.isPurchasing)
 
-            Text("Cancel anytime. No charge for 3 days.")
+            Text("Cancel anytime in your App Store settings.")
                 .font(.system(size: 13, weight: .regular, design: .serif))
-                .foregroundStyle(.white.opacity(0.65))
+                .foregroundStyle(.white.opacity(0.75))
         }
     }
 
@@ -237,18 +254,18 @@ struct OnboardingPaywallScreen: View {
                 }
             }
             .font(.system(size: 14, weight: .medium, design: .serif))
-            .foregroundStyle(.white.opacity(0.55))
+            .foregroundStyle(.white.opacity(0.7))
 
             HStack(spacing: 16) {
                 Link("Terms of Service", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                 Link("Privacy Policy", destination: URL(string: "https://www.apple.com/legal/privacy/")!)
             }
-            .font(.system(size: 12, weight: .regular))
-            .foregroundStyle(.white.opacity(0.4))
+            .font(.system(size: 13, weight: .regular))
+            .foregroundStyle(.white.opacity(0.65))
 
             Text("Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.")
-                .font(.system(size: 10, weight: .regular))
-                .foregroundStyle(.white.opacity(0.3))
+                .font(.system(size: 11, weight: .regular))
+                .foregroundStyle(.white.opacity(0.55))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
         }
