@@ -1,12 +1,16 @@
 import SwiftUI
 import MessageUI
+import UIKit
 
 struct FeedbackView: View {
     @State private var rating: Int = 0
     @State private var feedbackText: String = ""
     @State private var submitted: Bool = false
+    @State private var showMailSheet: Bool = false
     @State private var showMailError: Bool = false
     @State private var appeared: Bool = false
+
+    private let recipient = "maxfayrweather@gmail.com"
 
     var body: some View {
         VStack(spacing: 16) {
@@ -40,10 +44,26 @@ struct FeedbackView: View {
         .offset(y: appeared ? 0 : 12)
         .animation(.spring(response: 0.5).delay(0.1), value: appeared)
         .onAppear { appeared = true }
+        .sheet(isPresented: $showMailSheet) {
+            MailComposeView(
+                recipient: recipient,
+                subject: "Whimsical Walks Feedback — \(rating)/5",
+                body: composedBody
+            ) { result in
+                showMailSheet = false
+                if result == .sent || result == .saved {
+                    markSubmitted()
+                }
+            }
+        }
         .alert("Unable to Send", isPresented: $showMailError) {
+            Button("Copy Email Address") {
+                UIPasteboard.general.string = recipient
+                markSubmitted()
+            }
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Your feedback has been saved. Please email us at support@whimsicalwalks.com")
+            Text("No mail account is set up on this device. Please email us at \(recipient)")
         }
     }
 
@@ -120,6 +140,17 @@ struct FeedbackView: View {
         .transition(.scale.combined(with: .opacity))
     }
 
+    private var composedBody: String {
+        """
+        Rating: \(rating)/5
+
+        \(feedbackText)
+
+        —
+        Sent from Whimsical Walks
+        """
+    }
+
     private func submitFeedback() {
         let feedbackKey = "whimsical_feedback_history"
         var history = UserDefaults.standard.array(forKey: feedbackKey) as? [[String: Any]] ?? []
@@ -131,8 +162,73 @@ struct FeedbackView: View {
         history.append(entry)
         UserDefaults.standard.set(history, forKey: feedbackKey)
 
+        if MFMailComposeViewController.canSendMail() {
+            showMailSheet = true
+        } else {
+            let subject = "Whimsical Walks Feedback — \(rating)/5"
+            let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let encodedBody = composedBody.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let urlString = "mailto:\(recipient)?subject=\(encodedSubject)&body=\(encodedBody)"
+            if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url) { success in
+                    if success {
+                        markSubmitted()
+                    } else {
+                        showMailError = true
+                    }
+                }
+            } else {
+                showMailError = true
+            }
+        }
+    }
+
+    private func markSubmitted() {
         withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
             submitted = true
+        }
+    }
+}
+
+private struct MailComposeView: UIViewControllerRepresentable {
+    let recipient: String
+    let subject: String
+    let body: String
+    let onFinish: (MFMailComposeResult) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onFinish: onFinish)
+    }
+
+    func makeUIViewController(context: Context) -> MFMailComposeViewController {
+        let vc = MFMailComposeViewController()
+        vc.mailComposeDelegate = context.coordinator
+        vc.setToRecipients([recipient])
+        vc.setSubject(subject)
+        vc.setMessageBody(body, isHTML: false)
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMailComposeViewController, context: Context) {}
+
+    final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
+        let onFinish: (MFMailComposeResult) -> Void
+
+        init(onFinish: @escaping (MFMailComposeResult) -> Void) {
+            self.onFinish = onFinish
+        }
+
+        nonisolated func mailComposeController(
+            _ controller: MFMailComposeViewController,
+            didFinishWith result: MFMailComposeResult,
+            error: Error?
+        ) {
+            let captured = result
+            Task { @MainActor in
+                controller.dismiss(animated: true) {
+                    self.onFinish(captured)
+                }
+            }
         }
     }
 }
