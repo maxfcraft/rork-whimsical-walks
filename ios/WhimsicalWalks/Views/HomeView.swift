@@ -83,16 +83,11 @@ struct HomeView: View {
         .onAppear {
             appeared = true
             walkingFactIndex = (walkingFactIndex + 1) % walkingFacts.count
-            Task {
-                await healthService.fetchTodaySteps()
-                dataService.updateTotalSteps(healthService.todaySteps)
-                if healthService.todaySteps >= dataService.stats.dailyStepGoal {
-                    dataService.markTodayGoalMet()
-                }
-                withAnimation(.easeInOut(duration: 1.2).delay(0.3)) {
-                    ringAnimated = true
-                }
-                animateStepCount(to: healthService.todaySteps)
+            Task { await loadSteps() }
+        }
+        .onChange(of: healthService.isAuthorized) { _, isAuthorized in
+            if isAuthorized {
+                Task { await loadSteps() }
             }
         }
     }
@@ -249,6 +244,18 @@ struct HomeView: View {
         }
         .padding(12)
         .background(.white.opacity(0.7), in: .rect(cornerRadius: 14))
+    }
+
+    private func loadSteps() async {
+        await healthService.fetchTodaySteps()
+        dataService.updateTotalSteps(healthService.todaySteps)
+        if healthService.todaySteps >= dataService.stats.dailyStepGoal {
+            dataService.markTodayGoalMet()
+        }
+        withAnimation(.easeInOut(duration: 1.2).delay(0.3)) {
+            ringAnimated = true
+        }
+        animateStepCount(to: healthService.todaySteps)
     }
 
     private func animateStepCount(to target: Int) {
