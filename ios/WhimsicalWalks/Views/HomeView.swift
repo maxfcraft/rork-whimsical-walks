@@ -115,14 +115,14 @@ struct HomeView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(WhimsicalTheme.blushPink.opacity(0.6), in: Capsule())
+        .background(WhimsicalTheme.pillBackground, in: Capsule())
     }
 
     private var stepRingSection: some View {
         VStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .stroke(WhimsicalTheme.ringPinkLight.opacity(0.3), lineWidth: 16)
+                    .stroke(WhimsicalTheme.ringTrack, lineWidth: 16)
                     .frame(width: 180, height: 180)
 
                 Circle()

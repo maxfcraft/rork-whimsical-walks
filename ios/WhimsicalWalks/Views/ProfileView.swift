@@ -372,19 +372,27 @@ struct MiniStat: View {
 }
 
 struct NotecardBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
-                .fill(Color(red: 0.99, green: 0.97, blue: 0.93))
+                .fill(WhimsicalTheme.notecardPaper)
 
             RoundedRectangle(cornerRadius: 4)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.5),
-                            Color.clear,
-                            Color.brown.opacity(0.03)
-                        ],
+                        colors: colorScheme == .dark
+                            ? [
+                                Color.white.opacity(0.04),
+                                Color.clear,
+                                Color.black.opacity(0.15)
+                            ]
+                            : [
+                                Color.white.opacity(0.5),
+                                Color.clear,
+                                Color.brown.opacity(0.03)
+                            ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -410,10 +418,15 @@ struct NotecardBackground: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color.brown.opacity(0.08), lineWidth: 1)
+                .stroke(
+                    colorScheme == .dark
+                        ? WhimsicalTheme.deepRose.opacity(0.18)
+                        : Color.brown.opacity(0.08),
+                    lineWidth: 1
+                )
         }
-        .shadow(color: .black.opacity(0.06), radius: 8, x: 2, y: 4)
-        .shadow(color: .brown.opacity(0.04), radius: 2, x: 1, y: 1)
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.06), radius: 8, x: 2, y: 4)
+        .shadow(color: colorScheme == .dark ? .black.opacity(0.2) : .brown.opacity(0.04), radius: 2, x: 1, y: 1)
     }
 }
 

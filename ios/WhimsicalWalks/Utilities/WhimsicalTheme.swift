@@ -30,6 +30,30 @@ enum WhimsicalTheme {
             : UIColor(red: 0.99, green: 0.97, blue: 0.94, alpha: 0.55)
     })
 
+    static let notecardPaper = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.20, green: 0.16, blue: 0.21, alpha: 1.0)
+            : UIColor(red: 0.99, green: 0.97, blue: 0.93, alpha: 1.0)
+    })
+
+    static let groundCream = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.22, green: 0.18, blue: 0.23, alpha: 0.95)
+            : UIColor(red: 0.99, green: 0.97, blue: 0.94, alpha: 0.9)
+    })
+
+    static let pillBackground = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.24, green: 0.18, blue: 0.22, alpha: 0.9)
+            : UIColor(red: 0.96, green: 0.80, blue: 0.82, alpha: 0.6)
+    })
+
+    static let ringTrack = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.32, green: 0.24, blue: 0.30, alpha: 0.55)
+            : UIColor(red: 0.96, green: 0.78, blue: 0.82, alpha: 0.3)
+    })
+
     static let ringPink = Color(red: 0.92, green: 0.50, blue: 0.58)
     static let ringPinkLight = Color(red: 0.96, green: 0.78, blue: 0.82)
 

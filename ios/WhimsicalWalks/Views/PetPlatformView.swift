@@ -70,7 +70,7 @@ struct PetPlatformView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            WhimsicalTheme.cream.opacity(0.9),
+                            WhimsicalTheme.groundCream,
                             WhimsicalTheme.blushPink.opacity(0.2)
                         ],
                         startPoint: .top,
