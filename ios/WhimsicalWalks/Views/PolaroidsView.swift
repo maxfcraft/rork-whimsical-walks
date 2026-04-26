@@ -67,7 +67,7 @@ struct PolaroidsView: View {
             .padding(.horizontal)
             .padding(.top, 8)
         }
-        .background { WhimsicalBackground(screen: .polaroids, customImage: customWallpaper) }
+        .background { WhimsicalBackground(screen: .polaroids, customImage: customWallpaper, customImageOverlay: dataService.polaroids.isEmpty) }
         .onAppear {
             appeared = true
         }

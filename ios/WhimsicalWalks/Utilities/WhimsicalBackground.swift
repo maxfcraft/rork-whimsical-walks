@@ -21,6 +21,7 @@ enum WhimsicalScreen {
 struct WhimsicalBackground: View {
     let screen: WhimsicalScreen
     var customImage: UIImage? = nil
+    var customImageOverlay: Bool = false
 
     var body: some View {
         Group {
@@ -29,6 +30,12 @@ struct WhimsicalBackground: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea()
+                    .overlay {
+                        if customImageOverlay {
+                            WhimsicalTheme.pageOverlay
+                                .ignoresSafeArea()
+                        }
+                    }
             } else {
                 Image(screen.backgroundImageName)
                     .resizable()
