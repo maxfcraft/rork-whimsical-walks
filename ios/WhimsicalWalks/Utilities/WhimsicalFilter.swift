@@ -35,13 +35,13 @@ struct WhimsicalFilter {
         let tempTint = CIFilter.temperatureAndTint()
         tempTint.inputImage = result
         tempTint.neutral = CIVector(x: 6500, y: 0)
-        tempTint.targetNeutral = CIVector(x: 6035, y: 34)
+        tempTint.targetNeutral = CIVector(x: 7120, y: 34)
         guard let ttOut = tempTint.outputImage else { return nil }
         result = ttOut
 
         let vignette = CIFilter.vignette()
         vignette.inputImage = result
-        vignette.intensity = 0.78
+        vignette.intensity = -0.78
         vignette.radius = 1.5
         guard let vigOut = vignette.outputImage else { return nil }
         result = vigOut
