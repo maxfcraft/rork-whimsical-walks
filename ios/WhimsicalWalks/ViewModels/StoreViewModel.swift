@@ -18,17 +18,27 @@ class StoreViewModel {
     init() {}
 
     func start() {
+        #if targetEnvironment(simulator)
+        isPremium = true
+        isLoading = false
+        loadFailed = false
+        return
+        #else
         guard Purchases.isConfigured else {
             loadFailed = true
             error = "Subscription service not available."
             return
         }
+        #endif
         isConfigured = true
         Task { await listenForUpdates() }
         Task { await fetchOfferings() }
     }
 
     private func listenForUpdates() async {
+        #if targetEnvironment(simulator)
+        return
+        #endif
         guard isConfigured else { return }
         for await info in Purchases.shared.customerInfoStream {
             self.isPremium = info.entitlements["premium"]?.isActive == true
