@@ -12,6 +12,24 @@ enum WhimsicalTheme {
     static let cream = Color(red: 0.99, green: 0.97, blue: 0.94)
     static let softWhite = Color(red: 1.0, green: 0.99, blue: 0.97)
 
+    static let cardBackground = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.18, green: 0.14, blue: 0.18, alpha: 0.85)
+            : UIColor(white: 1.0, alpha: 0.7)
+    })
+
+    static let cardBackgroundSolid = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.20, green: 0.16, blue: 0.20, alpha: 1.0)
+            : UIColor(red: 0.99, green: 0.97, blue: 0.94, alpha: 1.0)
+    })
+
+    static let pageOverlay = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 0.10, green: 0.07, blue: 0.11, alpha: 0.78)
+            : UIColor(red: 0.99, green: 0.97, blue: 0.94, alpha: 0.55)
+    })
+
     static let ringPink = Color(red: 0.92, green: 0.50, blue: 0.58)
     static let ringPinkLight = Color(red: 0.96, green: 0.78, blue: 0.82)
 

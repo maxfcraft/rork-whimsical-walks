@@ -39,7 +39,7 @@ struct FeedbackView: View {
             }
         }
         .padding(20)
-        .background(.white.opacity(0.7), in: .rect(cornerRadius: 20))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 12)
         .animation(.spring(response: 0.5).delay(0.1), value: appeared)
@@ -92,7 +92,7 @@ struct FeedbackView: View {
             .font(.system(.subheadline, design: .serif))
             .lineLimit(3...5)
             .padding(12)
-            .background(WhimsicalTheme.cream, in: .rect(cornerRadius: 12))
+            .background(WhimsicalTheme.cardBackgroundSolid, in: .rect(cornerRadius: 12))
             .overlay {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(WhimsicalTheme.blushPink.opacity(0.5), lineWidth: 1)

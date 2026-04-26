@@ -59,7 +59,7 @@ struct PetsView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(.white.opacity(0.7), in: Capsule())
+        .background(WhimsicalTheme.cardBackground, in: Capsule())
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -81,7 +81,7 @@ struct PetsView: View {
                 starRatingView(pet.starRating)
             }
             .padding(16)
-            .background(.white.opacity(0.7), in: .rect(cornerRadius: 20))
+            .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
         }
     }
 
@@ -155,7 +155,7 @@ struct PetCard: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .padding(.horizontal, 4)
-            .background(.white.opacity(0.75), in: .rect(cornerRadius: 16))
+            .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
     }

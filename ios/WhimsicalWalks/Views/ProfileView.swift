@@ -25,6 +25,7 @@ struct ProfileView: View {
                         .padding(.horizontal, -4)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
+                darkModeToggle
                 streakSection
                 goalSection
                 ProfileHighlightsView(dataService: dataService)
@@ -260,10 +261,28 @@ struct ProfileView: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(16)
-            .background(.white.opacity(0.7), in: .rect(cornerRadius: 20))
+            .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: showJourney)
+    }
+
+    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
+
+    private var darkModeToggle: some View {
+        HStack {
+            Image(systemName: isDarkMode ? "moon.stars.fill" : "sun.max.fill")
+                .foregroundStyle(WhimsicalTheme.deepLavender)
+                .contentTransition(.symbolEffect(.replace))
+            Text("Dark Mode")
+                .font(.system(.headline, design: .serif))
+                .foregroundStyle(.primary)
+            Spacer()
+            WhimsicalDarkModeSwitch(isOn: $isDarkMode)
+        }
+        .padding(16)
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
+        .sensoryFeedback(.selection, trigger: isDarkMode)
     }
 
     private var streakSection: some View {
@@ -282,7 +301,7 @@ struct ProfileView: View {
             ProfileStreakCalendar(streakDates: dataService.stats.streakDates)
         }
         .padding(16)
-        .background(.white.opacity(0.7), in: .rect(cornerRadius: 20))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
     }
 
     private var goalSection: some View {
@@ -304,7 +323,7 @@ struct ProfileView: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(16)
-            .background(.white.opacity(0.7), in: .rect(cornerRadius: 20))
+            .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
         }
         .buttonStyle(.plain)
     }

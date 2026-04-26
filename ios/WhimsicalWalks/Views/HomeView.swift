@@ -200,7 +200,7 @@ struct HomeView: View {
             }
         }
         .padding(16)
-        .background(.white.opacity(0.7), in: .rect(cornerRadius: 16))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 16))
     }
 
     private func questPreviewCard(_ quest: Quest) -> some View {
@@ -243,7 +243,7 @@ struct HomeView: View {
             .sensoryFeedback(.impact(flexibility: .soft), trigger: selectedTab)
         }
         .padding(12)
-        .background(.white.opacity(0.7), in: .rect(cornerRadius: 14))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 14))
     }
 
     private func loadSteps() async {
@@ -350,6 +350,6 @@ struct HomeView: View {
                 .foregroundStyle(.tertiary)
         }
         .padding(10)
-        .background(.white.opacity(0.7), in: .rect(cornerRadius: 14))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 14))
     }
 }

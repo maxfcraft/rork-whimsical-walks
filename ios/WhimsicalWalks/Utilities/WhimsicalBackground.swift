@@ -28,7 +28,7 @@ struct WhimsicalBackground: View {
             .ignoresSafeArea()
             .opacity(0.3)
             .overlay {
-                WhimsicalTheme.cream.opacity(0.55)
+                WhimsicalTheme.pageOverlay
                     .ignoresSafeArea()
             }
     }

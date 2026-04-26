@@ -6,6 +6,7 @@ struct WhimsicalWalksApp: App {
     @State private var showSplash: Bool = true
     @State private var store = StoreViewModel()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding: Bool = false
+    @AppStorage("isDarkMode") private var isDarkMode: Bool = false
 
     init() {
         FontRegistration.registerFonts()
@@ -59,7 +60,7 @@ struct WhimsicalWalksApp: App {
                     .transition(.opacity)
                 }
             }
-            .preferredColorScheme(.light)
+            .preferredColorScheme(isDarkMode ? .dark : .light)
             .task {
                 store.start()
                 await store.checkStatus()

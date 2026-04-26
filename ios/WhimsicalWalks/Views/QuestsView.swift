@@ -120,7 +120,7 @@ struct QuestCard: View {
             }
         }
         .padding(16)
-        .background(.white.opacity(0.75), in: .rect(cornerRadius: 20))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 20))
     }
 }
 

@@ -102,7 +102,7 @@ struct ProfileHighlightsView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
         .frame(width: 200)
-        .background(.white.opacity(0.75), in: .rect(cornerRadius: 16))
+        .background(WhimsicalTheme.cardBackground, in: .rect(cornerRadius: 16))
         .overlay {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(card.color.opacity(0.1), lineWidth: 1)
