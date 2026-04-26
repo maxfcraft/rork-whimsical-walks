@@ -13,51 +13,38 @@ struct WhimsicalFilter {
 
         let exposure = CIFilter.exposureAdjust()
         exposure.inputImage = result
-        exposure.ev = -0.4
+        exposure.ev = -0.62
         guard let exposureOut = exposure.outputImage else { return nil }
         result = exposureOut
 
         let highlightShadow = CIFilter.highlightShadowAdjust()
         highlightShadow.inputImage = result
-        highlightShadow.highlightAmount = 0.1
-        highlightShadow.shadowAmount = -0.05
+        highlightShadow.highlightAmount = 0.84
+        highlightShadow.shadowAmount = 0.0
         guard let hsOut = highlightShadow.outputImage else { return nil }
         result = hsOut
 
         let colorControls = CIFilter.colorControls()
         colorControls.inputImage = result
-        colorControls.brightness = 0.04
-        colorControls.contrast = 1.05
-        colorControls.saturation = 1.35
+        colorControls.brightness = -0.27
+        colorControls.contrast = 0.75
+        colorControls.saturation = 1.16
         guard let ccOut = colorControls.outputImage else { return nil }
         result = ccOut
-
-        let vibrance = CIFilter.vibrance()
-        vibrance.inputImage = result
-        vibrance.amount = -0.1
-        guard let vibOut = vibrance.outputImage else { return nil }
-        result = vibOut
 
         let tempTint = CIFilter.temperatureAndTint()
         tempTint.inputImage = result
         tempTint.neutral = CIVector(x: 6500, y: 0)
-        tempTint.targetNeutral = CIVector(x: 5500, y: 65)
+        tempTint.targetNeutral = CIVector(x: 6035, y: 34)
         guard let ttOut = tempTint.outputImage else { return nil }
         result = ttOut
 
-        let sharpen = CIFilter.sharpenLuminance()
-        sharpen.inputImage = result
-        sharpen.sharpness = 0.3
-        sharpen.radius = 1.5
-        guard let sharpOut = sharpen.outputImage else { return nil }
-        result = sharpOut
-
-        let bloom = CIFilter.bloom()
-        bloom.inputImage = result
-        bloom.radius = 8
-        bloom.intensity = 0.15
-        guard let bloomOut = bloom.outputImage else { return nil }
-        result = bloomOut
+        let vignette = CIFilter.vignette()
+        vignette.inputImage = result
+        vignette.intensity = 0.78
+        vignette.radius = 1.5
+        guard let vigOut = vignette.outputImage else { return nil }
+        result = vigOut
 
         guard let cgImage = ciContext.createCGImage(result, from: extent) else { return nil }
         return UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
