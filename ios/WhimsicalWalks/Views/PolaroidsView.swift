@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import PhotosUI
 
 struct PolaroidsView: View {
     let dataService: DataService
@@ -7,6 +8,9 @@ struct PolaroidsView: View {
     @State private var appeared: Bool = false
     @State private var selectedPolaroid: Polaroid?
     @State private var revealingPolaroid: Polaroid?
+    @State private var wallpaperItem: PhotosPickerItem?
+    @State private var customWallpaper: UIImage? = WallpaperManager.load()
+    @State private var showWallpaperOptions: Bool = false
 
     private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -63,7 +67,7 @@ struct PolaroidsView: View {
             .padding(.horizontal)
             .padding(.top, 8)
         }
-        .background { WhimsicalBackground(screen: .polaroids) }
+        .background { WhimsicalBackground(screen: .polaroids, customImage: customWallpaper) }
         .onAppear {
             appeared = true
         }
@@ -79,11 +83,82 @@ struct PolaroidsView: View {
     }
 
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            WhimsicalTitle("Polaroids")
-            WhimsicalSubtitle("complete quests to add memories")
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                WhimsicalTitle("Polaroids")
+                WhimsicalSubtitle("complete quests to add memories")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            wallpaperButton
+                .padding(.top, 8)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var wallpaperButton: some View {
+        Button {
+            if customWallpaper != nil {
+                showWallpaperOptions = true
+            } else {
+                showWallpaperOptions = true
+            }
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [WhimsicalTheme.blushPink, WhimsicalTheme.deepRose.opacity(0.85)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 44, height: 44)
+                    .shadow(color: WhimsicalTheme.deepRose.opacity(0.35), radius: 8, x: 0, y: 3)
+
+                Image(systemName: customWallpaper == nil ? "photo.badge.plus" : "photo.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+            }
+        }
+        .photosPicker(isPresented: Binding(
+            get: { showWallpaperOptions && customWallpaper == nil },
+            set: { if !$0 { showWallpaperOptions = false } }
+        ), selection: $wallpaperItem, matching: .images)
+        .confirmationDialog("Wallpaper", isPresented: Binding(
+            get: { showWallpaperOptions && customWallpaper != nil },
+            set: { if !$0 { showWallpaperOptions = false } }
+        )) {
+            Button("Choose New Wallpaper") {
+                showWallpaperOptions = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    customWallpaper = nil
+                    showWallpaperOptions = true
+                }
+            }
+            Button("Remove Wallpaper", role: .destructive) {
+                WallpaperManager.clear()
+                withAnimation(.spring(response: 0.4)) {
+                    customWallpaper = nil
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        .onChange(of: wallpaperItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    WallpaperManager.save(image)
+                    await MainActor.run {
+                        withAnimation(.spring(response: 0.45)) {
+                            customWallpaper = image
+                        }
+                        wallpaperItem = nil
+                    }
+                }
+            }
+        }
+        .sensoryFeedback(.impact(flexibility: .soft), trigger: customWallpaper != nil)
     }
 
     private var emptyState: some View {

@@ -20,16 +20,26 @@ enum WhimsicalScreen {
 
 struct WhimsicalBackground: View {
     let screen: WhimsicalScreen
+    var customImage: UIImage? = nil
 
     var body: some View {
-        Image(screen.backgroundImageName)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .ignoresSafeArea()
-            .opacity(0.3)
-            .overlay {
-                WhimsicalTheme.pageOverlay
+        Group {
+            if let customImage {
+                Image(uiImage: customImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea()
+            } else {
+                Image(screen.backgroundImageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .ignoresSafeArea()
+                    .opacity(0.3)
+                    .overlay {
+                        WhimsicalTheme.pageOverlay
+                            .ignoresSafeArea()
+                    }
             }
+        }
     }
 }
