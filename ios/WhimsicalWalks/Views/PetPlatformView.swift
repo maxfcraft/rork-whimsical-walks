@@ -3,6 +3,7 @@ import Foundation
 
 struct PetPlatformView: View {
     let ownedPets: [Pet]
+    @Environment(\.colorScheme) private var colorScheme
     @State private var appeared: Bool = false
     @State private var floatPhase: Bool = false
 
@@ -32,15 +33,63 @@ struct PetPlatformView: View {
         }
     }
 
+    private var backHillColors: [Color] {
+        if colorScheme == .dark {
+            return [
+                Color(red: 0.28, green: 0.18, blue: 0.42).opacity(0.55),
+                Color(red: 0.18, green: 0.10, blue: 0.30).opacity(0.30)
+            ]
+        }
+        return [
+            WhimsicalTheme.sageGreen.opacity(0.18),
+            WhimsicalTheme.sageGreen.opacity(0.08)
+        ]
+    }
+
+    private var midHillColors: [Color] {
+        if colorScheme == .dark {
+            return [
+                Color(red: 0.36, green: 0.22, blue: 0.50).opacity(0.65),
+                Color(red: 0.24, green: 0.14, blue: 0.36).opacity(0.45)
+            ]
+        }
+        return [
+            WhimsicalTheme.blushPink.opacity(0.25),
+            WhimsicalTheme.warmPeach.opacity(0.12)
+        ]
+    }
+
+    private var frontHillColors: [Color] {
+        if colorScheme == .dark {
+            return [
+                Color(red: 0.46, green: 0.28, blue: 0.62),
+                Color(red: 0.22, green: 0.12, blue: 0.34)
+            ]
+        }
+        return [
+            WhimsicalTheme.groundCream,
+            WhimsicalTheme.blushPink.opacity(0.2)
+        ]
+    }
+
+    private var frontHillStroke: Color {
+        colorScheme == .dark
+            ? Color(red: 0.70, green: 0.55, blue: 0.90).opacity(0.35)
+            : WhimsicalTheme.deepRose.opacity(0.12)
+    }
+
+    private var frontHillShadow: Color {
+        colorScheme == .dark
+            ? Color(red: 0.55, green: 0.35, blue: 0.85).opacity(0.35)
+            : WhimsicalTheme.deepRose.opacity(0.08)
+    }
+
     private func grassHills(width w: CGFloat, height h: CGFloat) -> some View {
         ZStack {
             WhimsicalHillShape(variant: .back)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            WhimsicalTheme.sageGreen.opacity(0.18),
-                            WhimsicalTheme.sageGreen.opacity(0.08)
-                        ],
+                        colors: backHillColors,
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -53,10 +102,7 @@ struct PetPlatformView: View {
             WhimsicalHillShape(variant: .mid)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            WhimsicalTheme.blushPink.opacity(0.25),
-                            WhimsicalTheme.warmPeach.opacity(0.12)
-                        ],
+                        colors: midHillColors,
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -69,15 +115,12 @@ struct PetPlatformView: View {
             WhimsicalHillShape(variant: .front)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            WhimsicalTheme.groundCream,
-                            WhimsicalTheme.blushPink.opacity(0.2)
-                        ],
+                        colors: frontHillColors,
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                .shadow(color: WhimsicalTheme.deepRose.opacity(0.08), radius: 12, x: 0, y: -6)
+                .shadow(color: frontHillShadow, radius: 12, x: 0, y: -6)
                 .frame(height: h * 0.55)
                 .offset(y: h * 0.45)
                 .opacity(appeared ? 1 : 0)
@@ -85,7 +128,7 @@ struct PetPlatformView: View {
 
             WhimsicalHillShape(variant: .front)
                 .stroke(
-                    WhimsicalTheme.deepRose.opacity(0.12),
+                    frontHillStroke,
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [6, 4])
                 )
                 .frame(height: h * 0.55)
