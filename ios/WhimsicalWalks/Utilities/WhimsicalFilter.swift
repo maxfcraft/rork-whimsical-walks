@@ -27,7 +27,7 @@ struct WhimsicalFilter {
         let colorControls = CIFilter.colorControls()
         colorControls.inputImage = result
         colorControls.brightness = -0.27
-        colorControls.contrast = 0.75
+        colorControls.contrast = 0.50
         colorControls.saturation = 1.16
         guard let ccOut = colorControls.outputImage else { return nil }
         result = ccOut
@@ -41,7 +41,7 @@ struct WhimsicalFilter {
 
         let vignette = CIFilter.vignette()
         vignette.inputImage = result
-        vignette.intensity = -0.78
+        vignette.intensity = -0.39
         vignette.radius = 1.5
         guard let vigOut = vignette.outputImage else { return nil }
         result = vigOut
